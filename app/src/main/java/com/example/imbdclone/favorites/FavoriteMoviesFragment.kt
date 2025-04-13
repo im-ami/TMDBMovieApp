@@ -9,10 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.imbdclone.MovieViewModelFactory
-import com.example.imbdclone.MoviesAdapter
+import com.example.imbdclone.data.adapters.MoviesAdapter
 import com.example.imbdclone.R
 import com.example.imbdclone.SharedViewModel
-import com.example.imbdclone.data.MoviesRepository
+import com.example.imbdclone.data.repository.MoviesRepository
 
 class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
     private lateinit var favoriteMoviesView: RecyclerView
@@ -31,7 +31,6 @@ class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
 
         favoriteMoviesView = view.findViewById(R.id.favorites)
         favoriteMoviesView.layoutManager = GridLayoutManager(requireContext(), 2)
-        favoriteMoviesAdapter = MoviesAdapter(emptyList())
         favoriteMoviesView.adapter = favoriteMoviesAdapter
 
     }

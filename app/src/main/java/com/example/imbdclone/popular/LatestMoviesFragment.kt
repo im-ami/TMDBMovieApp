@@ -9,10 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.imbdclone.MovieViewModelFactory
-import com.example.imbdclone.MoviesAdapter
+import com.example.imbdclone.data.adapters.MoviesAdapter
 import com.example.imbdclone.R
 import com.example.imbdclone.SharedViewModel
-import com.example.imbdclone.data.MoviesRepository
+import com.example.imbdclone.data.repository.MoviesRepository
 
 class LatestMoviesFragment : Fragment(R.layout.latest_movies_fragment) {
 
@@ -31,14 +31,29 @@ class LatestMoviesFragment : Fragment(R.layout.latest_movies_fragment) {
         progressBar = view.findViewById(R.id.progressBar)
 
         latestMoviesView = view.findViewById(R.id.latest)
-        latestMoviesView.layoutManager = GridLayoutManager(requireContext(), 2)
-        latestMoviesAdapter = MoviesAdapter(emptyList())
+        val layoutManager = GridLayoutManager(requireContext(), 2)
+        latestMoviesView.layoutManager = layoutManager
+        latestMoviesAdapter = MoviesAdapter()
         latestMoviesView.adapter = latestMoviesAdapter
 
-        viewModel.items.observe(viewLifecycleOwner) { moviesList ->
-            latestMoviesAdapter.updateMoviesList(moviesList)
+        viewModel.items.observe(viewLifecycleOwner) { updatedList ->
+            latestMoviesAdapter.submitList(updatedList)
             progressBar.visibility = View.GONE
         }
+
+        latestMoviesView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val totalItemCount = layoutManager.itemCount
+                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
+                val visibleThreshold = 4
+
+                if (totalItemCount <= lastVisibleItem + visibleThreshold) {
+                    viewModel.loadNextPage()
+                }
+            }
+        })
     }
 
     override fun onResume() {

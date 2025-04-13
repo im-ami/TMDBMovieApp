@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.imbdclone.data.MovieData
-import com.example.imbdclone.data.MoviesRepository
+import com.example.imbdclone.data.model.MovieData
+import com.example.imbdclone.data.repository.MoviesRepository
 import kotlinx.coroutines.launch
 
 class FavoriteMoviesViewModel(

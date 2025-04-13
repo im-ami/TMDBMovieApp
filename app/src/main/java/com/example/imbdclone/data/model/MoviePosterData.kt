@@ -1,4 +1,4 @@
-package com.example.imbdclone.data
+package com.example.imbdclone.data.model
 
 import com.squareup.moshi.Json
 

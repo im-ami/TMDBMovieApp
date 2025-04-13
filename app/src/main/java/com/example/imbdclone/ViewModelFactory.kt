@@ -2,7 +2,7 @@ package com.example.imbdclone
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.imbdclone.data.MoviesRepository
+import com.example.imbdclone.data.repository.MoviesRepository
 import com.example.imbdclone.favorites.FavoriteMoviesViewModel
 import com.example.imbdclone.popular.LatestMoviesViewModel
 

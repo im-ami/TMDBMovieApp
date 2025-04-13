@@ -1,6 +1,6 @@
-package com.example.imbdclone.data
+package com.example.imbdclone.data.repository
 
-import com.example.imbdclone.BuildConfig
+import com.example.imbdclone.data.model.MovieData
 import com.example.imbdclone.network.TMDBApiService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -28,9 +28,9 @@ class MoviesRepository {
         }
     }
 
-    suspend fun fetchLatestMovies(): List<MovieData> {
+    suspend fun fetchLatestMovies(nextPage: Int): List<MovieData> {
         val response = RetrofitInstance.api.getLatestMovies(
-            apiKey = BuildConfig.TMDB_API_KEY
+            page = nextPage
         )
         return response.results
     }
