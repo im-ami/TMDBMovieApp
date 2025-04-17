@@ -12,7 +12,7 @@ data class MovieData(
     val title: String,
     val overview: String,
     @Json(name = "poster_path") val posterPath: String?,
-    val media_type: String,
+    val backdrop_path: String,
     val adult: Boolean,
     val original_language: String,
     val popularity: Double,

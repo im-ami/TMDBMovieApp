@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.imbdclone.data.repository.MoviesRepository
 import com.example.imbdclone.favorites.FavoriteMoviesViewModel
+import com.example.imbdclone.movie_details.MovieDetailsViewModel
 import com.example.imbdclone.popular.LatestMoviesViewModel
 
 class MovieViewModelFactory(private val moviesRepository: MoviesRepository) : ViewModelProvider.Factory {
@@ -13,6 +14,9 @@ class MovieViewModelFactory(private val moviesRepository: MoviesRepository) : Vi
         }
         if (modelClass.isAssignableFrom(FavoriteMoviesViewModel::class.java)) {
             return FavoriteMoviesViewModel(moviesRepository) as T
+        }
+        if (modelClass.isAssignableFrom(MovieDetailsViewModel::class.java)) {
+            return MovieDetailsViewModel(moviesRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

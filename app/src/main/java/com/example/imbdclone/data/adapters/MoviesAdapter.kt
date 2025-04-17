@@ -13,17 +13,9 @@ import com.example.imbdclone.R
 import com.example.imbdclone.data.model.MovieData
 import java.util.Locale
 
-val diffUtil = object : DiffUtil.ItemCallback<MovieData>() {
-    override fun areItemsTheSame(oldItem: MovieData, newItem: MovieData): Boolean {
-        return oldItem.id == newItem.id
-    }
-
-    override fun areContentsTheSame(oldItem: MovieData, newItem: MovieData): Boolean {
-        return oldItem == newItem
-    }
-}
-
-class MoviesAdapter : ListAdapter<MovieData, MoviesAdapter.LatestMoviesViewHolder>(diffUtil) {
+class MoviesAdapter(
+    private val onItemClick: (MovieData) -> Unit
+) : ListAdapter<MovieData, MoviesAdapter.LatestMoviesViewHolder>(diffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LatestMoviesViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.grid_item, parent, false)
@@ -32,19 +24,38 @@ class MoviesAdapter : ListAdapter<MovieData, MoviesAdapter.LatestMoviesViewHolde
 
     override fun onBindViewHolder(holder: LatestMoviesViewHolder, position: Int) {
         val item = getItem(position)
-
-        val imageUrl = "https://image.tmdb.org/t/p/w500" + item.posterPath
-        GlideApp.with(holder.itemView)
-            .load(imageUrl)
-            .into(holder.moviePoster)
-
-        holder.movieTitle.text = item.title
-        holder.movieRatings.text = String.format(Locale.US,"%.1f", item.vote_average)
+        holder.bind(item, onItemClick)
     }
 
     class LatestMoviesViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val moviePoster: ImageView = itemView.findViewById(R.id.movie_poster)
-        val movieTitle: TextView = itemView.findViewById(R.id.movie_title)
-        val movieRatings: TextView = itemView.findViewById(R.id.movie_ratings)
+        private val moviePoster: ImageView = itemView.findViewById(R.id.movie_poster)
+        private val movieTitle: TextView = itemView.findViewById(R.id.movie_title)
+        private val movieRatings: TextView = itemView.findViewById(R.id.movie_ratings)
+
+        fun bind(item: MovieData, onItemClick: (MovieData) -> Unit) {
+            itemView.setOnClickListener {
+                onItemClick(item)
+            }
+
+            val imageUrl = "https://image.tmdb.org/t/p/w500" + item.posterPath
+            GlideApp.with(itemView)
+                .load(imageUrl)
+                .into(moviePoster)
+
+            movieTitle.text = item.title
+            movieRatings.text = String.format(Locale.US,"%.1f", item.vote_average)
+        }
+    }
+
+    companion object {
+        val diffUtil = object : DiffUtil.ItemCallback<MovieData>() {
+            override fun areItemsTheSame(oldItem: MovieData, newItem: MovieData): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(oldItem: MovieData, newItem: MovieData): Boolean {
+                return oldItem == newItem
+            }
+        }
     }
 }

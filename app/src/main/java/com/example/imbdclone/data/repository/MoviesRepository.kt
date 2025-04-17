@@ -1,5 +1,6 @@
 package com.example.imbdclone.data.repository
 
+import android.util.Log
 import com.example.imbdclone.data.model.MovieData
 import com.example.imbdclone.network.TMDBApiService
 import com.squareup.moshi.Moshi
@@ -33,5 +34,12 @@ class MoviesRepository {
             page = nextPage
         )
         return response.results
+    }
+
+    suspend fun fetchMovieDetails(movieID: Int): MovieData {
+        val response = RetrofitInstance.api.getMovieDetails(
+            movieID = movieID
+        )
+        return response
     }
 }

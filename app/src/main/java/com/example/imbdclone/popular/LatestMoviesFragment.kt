@@ -13,6 +13,7 @@ import com.example.imbdclone.data.adapters.MoviesAdapter
 import com.example.imbdclone.R
 import com.example.imbdclone.SharedViewModel
 import com.example.imbdclone.data.repository.MoviesRepository
+import com.example.imbdclone.movie_details.MovieDetailsFragment
 
 class LatestMoviesFragment : Fragment(R.layout.latest_movies_fragment) {
 
@@ -33,7 +34,16 @@ class LatestMoviesFragment : Fragment(R.layout.latest_movies_fragment) {
         latestMoviesView = view.findViewById(R.id.latest)
         val layoutManager = GridLayoutManager(requireContext(), 2)
         latestMoviesView.layoutManager = layoutManager
-        latestMoviesAdapter = MoviesAdapter()
+
+        latestMoviesAdapter = MoviesAdapter { movie ->
+            val movieID = movie.id
+
+            val fragment = MovieDetailsFragment.newInstance(movieID)
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment, fragment)
+                .addToBackStack(null)
+                .commit()
+        }
         latestMoviesView.adapter = latestMoviesAdapter
 
         viewModel.items.observe(viewLifecycleOwner) { updatedList ->
