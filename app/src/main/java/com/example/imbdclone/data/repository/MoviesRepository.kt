@@ -1,7 +1,9 @@
 package com.example.imbdclone.data.repository
 
 import android.util.Log
+import com.example.imbdclone.data.model.CreditsData
 import com.example.imbdclone.data.model.MovieData
+import com.example.imbdclone.data.model.MovieDetails
 import com.example.imbdclone.network.TMDBApiService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -36,10 +38,18 @@ class MoviesRepository {
         return response.results
     }
 
-    suspend fun fetchMovieDetails(movieID: Int): MovieData {
+    suspend fun fetchMovieDetails(movieID: Int): MovieDetails {
         val response = RetrofitInstance.api.getMovieDetails(
             movieID = movieID
         )
         return response
     }
+
+    suspend fun getMovieCredits(movieID: Int): CreditsData {
+        val response = RetrofitInstance.api.getMovieCredits(
+            movieID = movieID
+        )
+        return response
+    }
+
 }

@@ -1,7 +1,9 @@
 package com.example.imbdclone.network
 
 import com.example.imbdclone.BuildConfig
+import com.example.imbdclone.data.model.CreditsData
 import com.example.imbdclone.data.model.MovieData
+import com.example.imbdclone.data.model.MovieDetails
 import com.example.imbdclone.data.model.MovieResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -21,5 +23,10 @@ interface TMDBApiService {
         @Path("movie_id") movieID: Int,
         @Query("language") language: String = "en-US",
         @Query("api_key") apiKey: String = BuildConfig.TMDB_API_KEY
-    ): MovieData
+    ): MovieDetails
+
+    @GET("movie/{movie_id}/credits")
+    suspend fun getMovieCredits(
+        @Path("movie_id") movieID: Int
+    ): CreditsData
 }
