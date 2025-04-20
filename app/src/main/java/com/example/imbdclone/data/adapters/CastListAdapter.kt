@@ -10,8 +10,9 @@ import com.example.imbdclone.R
 import com.example.imbdclone.data.model.Cast
 import com.google.android.material.imageview.ShapeableImageView
 
-class CastListAdapter: RecyclerView.Adapter<CastListAdapter.ViewHolder>() {
-    private lateinit var castList: List<Cast>
+class CastListAdapter(
+    private val castList: List<Cast>
+): RecyclerView.Adapter<CastListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.horizontal_scroll, parent, false)
@@ -23,7 +24,7 @@ class CastListAdapter: RecyclerView.Adapter<CastListAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(castList.get(position))
+        holder.bind(castList[position])
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

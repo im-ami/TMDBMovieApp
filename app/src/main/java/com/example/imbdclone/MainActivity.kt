@@ -1,9 +1,7 @@
 package com.example.imbdclone
 
 import android.os.Bundle
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
@@ -16,7 +14,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var latestMoviesFragment: LatestMoviesFragment
     private lateinit var favoriteMoviesFragment: FavoriteMoviesFragment
-    private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,14 +21,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         WindowCompat.setDecorFitsSystemWindows(window, true)
 
-        val textViewTitle = findViewById<TextView>(R.id.app_logo)
         latestMoviesFragment = LatestMoviesFragment()
         favoriteMoviesFragment = FavoriteMoviesFragment()
         bottomNavigationView = findViewById(R.id.bottom_nav_bar)
-
-        sharedViewModel.title.observe(this) { newTitle ->
-            textViewTitle.text = newTitle
-        }
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()

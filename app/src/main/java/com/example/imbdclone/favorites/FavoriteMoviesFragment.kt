@@ -11,14 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.imbdclone.MovieViewModelFactory
 import com.example.imbdclone.data.adapters.MoviesAdapter
 import com.example.imbdclone.R
-import com.example.imbdclone.SharedViewModel
 import com.example.imbdclone.data.repository.MoviesRepository
 
 class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
     private lateinit var favoriteMoviesView: RecyclerView
     private lateinit var favoriteMoviesAdapter: MoviesAdapter
     private lateinit var progressBar: ProgressBar
-    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     private val viewModel: FavoriteMoviesViewModel by viewModels {
         MovieViewModelFactory(MoviesRepository())
@@ -33,10 +31,5 @@ class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
         favoriteMoviesView.layoutManager = GridLayoutManager(requireContext(), 2)
         favoriteMoviesView.adapter = favoriteMoviesAdapter
 
-    }
-
-    override fun onResume() {
-        super.onResume()
-        sharedViewModel.setTitle("Favorite Movies")
     }
 }

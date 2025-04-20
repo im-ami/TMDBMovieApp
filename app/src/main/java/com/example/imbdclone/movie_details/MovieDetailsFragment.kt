@@ -7,10 +7,15 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.imbdclone.GlideApp
 import com.example.imbdclone.MovieViewModelFactory
 import com.example.imbdclone.R
+import com.example.imbdclone.data.adapters.CastListAdapter
+import com.example.imbdclone.data.adapters.MovieImagesListAdapter
 import com.example.imbdclone.data.repository.MoviesRepository
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.Locale
 
 class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
@@ -22,6 +27,12 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     private lateinit var releaseDate: TextView
     private lateinit var tagline: TextView
     private lateinit var overview: TextView
+    private lateinit var castList: RecyclerView
+    private lateinit var movieImageList: RecyclerView
+    private lateinit var castListAdapter: CastListAdapter
+    private lateinit var movieImageListAdapter: MovieImagesListAdapter
+    private lateinit var bottomNavBar: BottomNavigationView
+    private var isExpanded = false
 
     private val viewModel: MovieDetailsViewModel by viewModels {
         MovieViewModelFactory(MoviesRepository())
@@ -50,8 +61,14 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
         releaseDate = view.findViewById(R.id.release_year)
         tagline = view.findViewById(R.id.tagline)
         overview = view.findViewById(R.id.synopsis)
+        castList = view.findViewById(R.id.cast_list)
+        movieImageList = view.findViewById(R.id.movie_images_list)
+
+        bottomNavBar = requireActivity().findViewById(R.id.bottom_nav_bar)
+        bottomNavBar.visibility = View.GONE
 
         val movieID = arguments?.getInt(MOVIE_ID)
+
         if (movieID != null) {
             viewModel.getMovieData(movieID)
             viewModel.movieData.observe(viewLifecycleOwner) { details ->
@@ -67,6 +84,30 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
                 tagline.text = details.tagline
                 overview.text = details.overview
             }
+
+            viewModel.getMovieCredits(movieID)
+            viewModel.movieCredits.observe(viewLifecycleOwner) { cast ->
+                castList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                castListAdapter = CastListAdapter(cast)
+                castList.adapter = castListAdapter
+            }
+
+            viewModel.getMovieImages(movieID)
+            viewModel.movieImages.observe(viewLifecycleOwner) { images ->
+                movieImageList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                movieImageListAdapter = MovieImagesListAdapter(images)
+                movieImageList.adapter = movieImageListAdapter
+            }
+
+            overview.setOnClickListener {
+                isExpanded = !isExpanded
+                overview.maxLines = if (isExpanded) Int.MAX_VALUE else 2
+            }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        bottomNavBar.visibility = View.VISIBLE
     }
 }
