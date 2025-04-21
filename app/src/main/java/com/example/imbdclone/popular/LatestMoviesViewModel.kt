@@ -12,11 +12,12 @@ class LatestMoviesViewModel(
     private val moviesRepository: MoviesRepository
 ) : ViewModel() {
 
-    private var _items = MutableLiveData<List<MovieData>>()
-    val items: LiveData<List<MovieData>> = _items
+    private val _uiState = MutableLiveData<LatestMoviesUiState>()
+    val uiState: LiveData<LatestMoviesUiState> = _uiState
 
     private var currentPage = 1
     private var isLoading = false
+    private val moviesList = mutableListOf<MovieData>()
 
     init {
         loadNextPage()
@@ -24,17 +25,32 @@ class LatestMoviesViewModel(
 
     fun loadNextPage() {
         if (isLoading) return
-
         isLoading = true
+
+
         viewModelScope.launch {
-            val result = moviesRepository.fetchLatestMovies(currentPage)
-            currentPage++
+            try {
+                val result = moviesRepository.fetchLatestMovies(currentPage)
+                moviesList.addAll(result)
+                currentPage++
 
-            val currentList = _items.value ?: emptyList()
-            val updatedList = currentList + result
-            _items.value = updatedList
+                _uiState.value = LatestMoviesUiState.Success(
+                    result = moviesList.toList()
+                )
+                isLoading = false
 
-            isLoading = false
+            } catch (e: Exception) {
+                isLoading = false
+                _uiState.value = LatestMoviesUiState.Error(e.message)
+            }
         }
+    }
+
+    sealed class LatestMoviesUiState {
+        data object Loading : LatestMoviesUiState()
+        data class Success(
+            val result: List<MovieData>
+        ) : LatestMoviesUiState()
+        data class Error(val message: String? = null) : LatestMoviesUiState()
     }
 }

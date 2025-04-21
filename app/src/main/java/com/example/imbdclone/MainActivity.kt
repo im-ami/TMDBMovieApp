@@ -16,10 +16,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var favoriteMoviesFragment: FavoriteMoviesFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        theme.applyStyle(R.style.OptOutEdgeToEdgeEnforcement, false)
+
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        WindowCompat.setDecorFitsSystemWindows(window, true)
 
         latestMoviesFragment = LatestMoviesFragment()
         favoriteMoviesFragment = FavoriteMoviesFragment()

@@ -4,13 +4,12 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.imbdclone.MovieViewModelFactory
-import com.example.imbdclone.data.adapters.MoviesAdapter
 import com.example.imbdclone.R
+import com.example.imbdclone.data.adapters.MoviesAdapter
 import com.example.imbdclone.data.repository.MoviesRepository
 
 class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
@@ -27,7 +26,7 @@ class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
 
         progressBar = view.findViewById(R.id.progressBar2)
 
-        favoriteMoviesView = view.findViewById(R.id.favorites)
+        favoriteMoviesView = view.findViewById(R.id.main_favorites_view)
         favoriteMoviesView.layoutManager = GridLayoutManager(requireContext(), 2)
         favoriteMoviesView.adapter = favoriteMoviesAdapter
 

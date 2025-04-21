@@ -7,6 +7,6 @@
 
     <style name="rounded_corners">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerRadius">20dp</item>
+        <item name="cornerSize">20%</item>
     </style>
 </resources>

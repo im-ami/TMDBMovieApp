@@ -1,6 +1,7 @@
 package com.example.imbdclone.data.repository
 
 import com.example.imbdclone.data.model.Cast
+import com.example.imbdclone.data.model.FavoriteMovies
 import com.example.imbdclone.data.model.MovieData
 import com.example.imbdclone.data.model.MovieDetails
 import com.example.imbdclone.data.model.MoviePosters
@@ -32,30 +33,67 @@ class MoviesRepository {
     }
 
     suspend fun fetchLatestMovies(nextPage: Int): List<MovieData> {
-        val response = RetrofitInstance.api.getLatestMovies(
-            page = nextPage
-        )
-        return response.results
+        return try {
+            val response = RetrofitInstance.api.getLatestMovies(
+                page = nextPage)
+            response.results
+
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
     suspend fun fetchMovieDetails(movieID: Int): MovieDetails {
-        val response = RetrofitInstance.api.getMovieDetails(
-            movieID = movieID
-        )
-        return response
+        return try {
+            val response = RetrofitInstance.api.getMovieDetails(
+                movieID = movieID
+            )
+            response
+        } catch (e: Exception) {
+            throw e
+        }
+
     }
 
     suspend fun getMovieCredits(movieID: Int): List<Cast> {
-        val response = RetrofitInstance.api.getMovieCredits(
-            movieID = movieID
-        )
-        return response.cast
+        return try {
+            val response = RetrofitInstance.api.getMovieCredits(
+                movieID = movieID
+            )
+            response.cast
+        } catch (e: Exception) {
+            throw e
+        }
+
     }
 
     suspend fun getMovieImages(movieID: Int): List<MoviePosters> {
-        val response = RetrofitInstance.api.getMovieImages(
-            movieID = movieID
-        )
-        return response.backdrops
+        return try {
+            val response = RetrofitInstance.api.getMovieImages(
+                movieID = movieID
+            )
+            response.backdrops
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun addToFavorites(accountID: Int) {
+        return try {
+            RetrofitInstance.api.addToFavorites(accountID = accountID)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun getFavorites(accountID: Int, page: Int): List<FavoriteMovies> {
+        return try {
+            val response = RetrofitInstance.api.getFavorites(
+                accountID = accountID,
+                page = page)
+            response.results
+        } catch (e: Exception) {
+            throw e
+        }
     }
 }

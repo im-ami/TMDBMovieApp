@@ -14,34 +14,46 @@ class MovieDetailsViewModel(
     private val moviesRepository: MoviesRepository
 ) : ViewModel() {
 
-    private val _movieData = MutableLiveData<MovieDetails>()
-    val movieData: LiveData<MovieDetails> = _movieData
+    private val accountID = 21934834
 
-    private val _movieCredits = MutableLiveData<List<Cast>>()
-    val movieCredits: LiveData<List<Cast>> = _movieCredits
+    private val _uiState = MutableLiveData<MovieDetailsUiState>()
+    val uiState: LiveData<MovieDetailsUiState> = _uiState
 
-    private val _movieImages = MutableLiveData<List<MoviePosters>>()
-    val movieImages: LiveData<List<MoviePosters>> = _movieImages
-
-    fun getMovieData(movieID: Int) {
+    fun addToFavorites() {
         viewModelScope.launch {
-            val movie = moviesRepository.fetchMovieDetails(movieID)
-            _movieData.postValue(movie)
+            moviesRepository.addToFavorites(accountID)
         }
     }
 
-    fun getMovieCredits(movieID: Int) {
+    fun loadMovieDetails(movieId: Int) {
+        _uiState.value = MovieDetailsUiState.Loading
+
         viewModelScope.launch {
-            val credits = moviesRepository.getMovieCredits(movieID)
-            _movieCredits.postValue(credits)
+            try {
+                val movie = moviesRepository.fetchMovieDetails(movieId)
+                val credits = moviesRepository.getMovieCredits(movieId)
+                val images = moviesRepository.getMovieImages(movieId)
+
+                _uiState.value = MovieDetailsUiState.Success(
+                    movie = movie,
+                    credits = credits,
+                    movieImages = images
+                )
+            } catch (e: Exception) {
+                _uiState.value = MovieDetailsUiState.Error(e.message)
+            }
+
         }
     }
 
-    fun getMovieImages(movieID: Int) {
-        viewModelScope.launch {
-            val images = moviesRepository.getMovieImages(movieID)
-            _movieImages.postValue(images)
-        }
+    sealed class MovieDetailsUiState {
+        data object Loading : MovieDetailsUiState()
+        data class Success(
+            val movie: MovieDetails,
+            val credits: List<Cast>,
+            val movieImages: List<MoviePosters>
+        ) : MovieDetailsUiState()
+        data class Error(val message: String? = null) : MovieDetailsUiState()
     }
 
 }

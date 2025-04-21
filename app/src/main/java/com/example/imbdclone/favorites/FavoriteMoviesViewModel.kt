@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.imbdclone.data.model.MovieData
+import com.example.imbdclone.data.model.FavoriteMovies
 import com.example.imbdclone.data.repository.MoviesRepository
 import kotlinx.coroutines.launch
 
@@ -12,14 +12,16 @@ class FavoriteMoviesViewModel(
     private val moviesRepository: MoviesRepository
 ) : ViewModel() {
 
-    private val _items = MutableLiveData<List<MovieData>>()
-    val items: LiveData<List<MovieData>> = _items
+    private val _uiState = MutableLiveData<List<FavoriteMovies>>()
+    val uiState: LiveData<List<FavoriteMovies>> = _uiState
+
+    val page = 1
 
     init {
-        fetchMovies()
+        fetchFavoriteMovies()
     }
 
-    private fun fetchMovies() {
+    private fun fetchFavoriteMovies() {
         viewModelScope.launch {
         }
     }
