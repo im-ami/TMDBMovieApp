@@ -1,4 +1,4 @@
-package com.example.imbdclone.movie_details
+package com.example.imbdclone.ui.movie_details
 
 import android.os.Bundle
 import android.view.View
@@ -13,17 +13,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.imbdclone.GlideApp
-import com.example.imbdclone.MovieViewModelFactory
+import com.bumptech.glide.Glide
+import com.example.imbdclone.di.MovieViewModelFactory
+import com.example.imbdclone.MyApp
 import com.example.imbdclone.R
-import com.example.imbdclone.data.adapters.CastListAdapter
-import com.example.imbdclone.data.adapters.MovieImagesListAdapter
+import com.example.imbdclone.ui.adapters.CastListAdapter
+import com.example.imbdclone.ui.adapters.MovieImagesListAdapter
 import com.example.imbdclone.data.model.Cast
+import com.example.imbdclone.ui.favorites.FavoriteMoviesEvent
 import com.example.imbdclone.data.model.MovieDetails
 import com.example.imbdclone.data.model.MoviePosters
-import com.example.imbdclone.data.repository.MoviesRepository
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.snackbar.Snackbar
 import java.util.Locale
 
 class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
@@ -47,7 +47,8 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     private var isExpanded = false
 
     private val viewModel: MovieDetailsViewModel by viewModels {
-        MovieViewModelFactory(MoviesRepository())
+        val app = requireActivity().application as MyApp
+        MovieViewModelFactory(app.repository)
     }
 
     companion object {
@@ -78,6 +79,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
         movieImageList = view.findViewById(R.id.movie_images_list)
         mainDetailedView = view.findViewById(R.id.main_detailed_view)
         fallbackContainer = view.findViewById(R.id.fallback_container)
+        favoriteButton = view.findViewById(R.id.fab)
 
         bottomNavBar = requireActivity().findViewById(R.id.bottom_nav_bar)
         bottomNavBar.visibility = View.GONE
@@ -110,22 +112,25 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
                     }
                 }
             }
+
+            viewModel.isMovieFavorite(movieID).observe(viewLifecycleOwner) { isFavorite ->
+                favoriteButton.setOnClickListener {
+                    if (isFavorite) {
+                        viewModel.onEvent(FavoriteMoviesEvent.RemoveFromFavorites(movieId = movieID))
+                        Toast.makeText(requireContext(), "Removed from Favorites", Toast.LENGTH_SHORT).show()
+                    } else {
+                        viewModel.onEvent(FavoriteMoviesEvent.AddToFavorites(movieId = movieID))
+                        Toast.makeText(requireContext(), "Added to Favorites", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
 
         overview.setOnClickListener {
             isExpanded = !isExpanded
             overview.maxLines = if (isExpanded) Int.MAX_VALUE else 2
         }
-        
-        favoriteButton = view.findViewById(R.id.fab)
-        favoriteButton.setOnClickListener {
-            val snackBar = Snackbar
-                .make(mainDetailedView, "Added to favorites", Snackbar.LENGTH_LONG)
-                .setAction("Remove") {
-                    Toast.makeText(requireContext(), "Removed from Favorites", Toast.LENGTH_SHORT).show()
-                }
-            snackBar.show()
-        }
+
     }
 
     override fun onDestroyView() {
@@ -149,8 +154,8 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
         val backgroundImageUrl = "https://image.tmdb.org/t/p/original${details.backdrop_path}"
         val posterImageUrl = "https://image.tmdb.org/t/p/original${details.posterPath}"
 
-        GlideApp.with(view).load(backgroundImageUrl).into(backgroundPoster)
-        GlideApp.with(view).load(posterImageUrl).into(mainPoster)
+        Glide.with(view).load(backgroundImageUrl).into(backgroundPoster)
+        Glide.with(view).load(posterImageUrl).into(mainPoster)
         movieTitle.text = details.title
         ratings.text = String.format(Locale.US,"%.1f", details.vote_average)
         ratingBar.rating = details.vote_average.toFloat()

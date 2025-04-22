@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("kotlin-kapt")
+    id("com.google.devtools.ksp")
+
 }
 
 val TMDBApiKey: String = project.findProperty("TMDB_API_KEY") as String? ?: ""
@@ -45,8 +47,11 @@ android {
 
 
 dependencies {
+    implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
+    ksp(libs.androidx.room.compiler)
+    ksp(libs.ksp)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
@@ -58,7 +63,6 @@ dependencies {
     implementation(libs.moshi.converter)
     implementation(libs.moshi.kotlin)
     implementation(libs.glide)
-    kapt("com.github.bumptech.glide:compiler:4.16.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

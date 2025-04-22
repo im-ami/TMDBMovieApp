@@ -1,13 +1,15 @@
-package com.example.imbdclone.network
+package com.example.imbdclone.data.source.remote
 
 import com.example.imbdclone.BuildConfig
 import com.example.imbdclone.data.model.CreditsData
-import com.example.imbdclone.data.model.FavoriteMoviesList
 import com.example.imbdclone.data.model.MovieDetails
 import com.example.imbdclone.data.model.MovieImages
 import com.example.imbdclone.data.model.MovieResponse
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
-import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -39,16 +41,21 @@ interface TMDBApiService {
         @Query("api_key") apiKey: String = BuildConfig.TMDB_API_KEY
     ): MovieImages
 
-    @POST("account/{account_id}/favorite")
-    suspend fun addToFavorites(
-        @Path("account_id") accountID: Int,
-        @Query("api_key") apiKey: String = BuildConfig.TMDB_API_KEY
-    )
+    companion object {
+        private const val BASE_URL = "https://api.themoviedb.org/3/"
 
-    @GET("account/{account_id}/favorite/movies")
-    suspend fun getFavorites(
-        @Path("account_id") accountID: Int,
-        @Query("api_key") apiKey: String = BuildConfig.TMDB_API_KEY,
-        @Query("page") page: Int
-    ): FavoriteMoviesList
+        fun create(): TMDBApiService {
+
+            val moshi = Moshi.Builder()
+                .add(KotlinJsonAdapterFactory())
+                .build()
+
+            val retrofit = Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(MoshiConverterFactory.create(moshi))
+                    .build()
+
+            return retrofit.create(TMDBApiService::class.java)
+        }
+    }
 }

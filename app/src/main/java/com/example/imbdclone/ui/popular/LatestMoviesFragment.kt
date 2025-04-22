@@ -1,4 +1,4 @@
-package com.example.imbdclone.popular
+package com.example.imbdclone.ui.popular
 
 import android.os.Bundle
 import android.view.View
@@ -9,11 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.imbdclone.MovieViewModelFactory
+import com.example.imbdclone.di.MovieViewModelFactory
+import com.example.imbdclone.MyApp
 import com.example.imbdclone.R
-import com.example.imbdclone.data.adapters.MoviesAdapter
-import com.example.imbdclone.data.repository.MoviesRepository
-import com.example.imbdclone.movie_details.MovieDetailsFragment
+import com.example.imbdclone.ui.adapters.MoviesAdapter
+import com.example.imbdclone.ui.movie_details.MovieDetailsFragment
 
 class LatestMoviesFragment : Fragment(R.layout.latest_movies_fragment) {
 
@@ -24,7 +24,8 @@ class LatestMoviesFragment : Fragment(R.layout.latest_movies_fragment) {
     private lateinit var fallbackContainer: LinearLayout
 
     private val viewModel: LatestMoviesViewModel by viewModels {
-        MovieViewModelFactory(MoviesRepository())
+        val app = requireActivity().application as MyApp
+        MovieViewModelFactory(app.repository)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,6 +48,7 @@ class LatestMoviesFragment : Fragment(R.layout.latest_movies_fragment) {
                 .addToBackStack(null)
                 .commit()
         }
+
         latestMoviesList.adapter = latestMoviesAdapter
 
         viewModel.uiState.observe(viewLifecycleOwner) { state ->

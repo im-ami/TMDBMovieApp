@@ -1,13 +1,14 @@
 package com.example.imbdclone.data.model
 
-data class FavoriteMoviesList(
-    val page: Int,
-    val results: List<FavoriteMovies>
-)
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
+@Entity
 data class FavoriteMovies(
-    val id: Int,
-    val original_title: String,
-    val popularity: Double,
+    @PrimaryKey
+    val movie_id: Int,
+    val is_favorite: Boolean,
+    val title: String,
+    val backdrop_path: String?,
     val vote_average: Double
 )

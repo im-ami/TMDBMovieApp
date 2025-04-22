@@ -1,4 +1,4 @@
-package com.example.imbdclone.data.adapters
+package com.example.imbdclone.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.imbdclone.GlideApp
+import com.bumptech.glide.Glide
 import com.example.imbdclone.R
 import com.example.imbdclone.data.model.MovieData
 import java.util.Locale
@@ -38,7 +38,7 @@ class MoviesAdapter(
             }
 
             val imageUrl = "https://image.tmdb.org/t/p/w500" + item.posterPath
-            GlideApp.with(itemView)
+            Glide.with(itemView)
                 .load(imageUrl)
                 .into(moviePoster)
 

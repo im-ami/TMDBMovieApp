@@ -1,4 +1,4 @@
-package com.example.imbdclone.popular
+package com.example.imbdclone.ui.popular
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,6 +27,9 @@ class LatestMoviesViewModel(
         if (isLoading) return
         isLoading = true
 
+        if (currentPage == 1) {
+            _uiState.value = LatestMoviesUiState.Loading
+        }
 
         viewModelScope.launch {
             try {
@@ -46,11 +49,11 @@ class LatestMoviesViewModel(
         }
     }
 
-    sealed class LatestMoviesUiState {
-        data object Loading : LatestMoviesUiState()
+    sealed interface LatestMoviesUiState {
+        data object Loading : LatestMoviesUiState
         data class Success(
             val result: List<MovieData>
-        ) : LatestMoviesUiState()
-        data class Error(val message: String? = null) : LatestMoviesUiState()
+        ) : LatestMoviesUiState
+        data class Error(val message: String? = null) : LatestMoviesUiState
     }
 }

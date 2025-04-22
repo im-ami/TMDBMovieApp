@@ -1,10 +1,10 @@
-package com.example.imbdclone.data.adapters
+package com.example.imbdclone.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.imbdclone.GlideApp
+import com.bumptech.glide.Glide
 import com.example.imbdclone.R
 import com.example.imbdclone.data.model.MoviePosters
 import com.google.android.material.imageview.ShapeableImageView
@@ -32,7 +32,7 @@ class MovieImagesListAdapter(
         fun bind(item: MoviePosters) {
             val movieImageUrl = "https://image.tmdb.org/t/p/w500" + item.file_path
 
-            GlideApp.with(itemView)
+            Glide.with(itemView)
                 .load(movieImageUrl)
                 .into(movieImage)
         }

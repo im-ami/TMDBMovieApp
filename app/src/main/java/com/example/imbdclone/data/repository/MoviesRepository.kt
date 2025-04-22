@@ -1,40 +1,44 @@
 package com.example.imbdclone.data.repository
 
+import android.util.Log
+import androidx.lifecycle.LiveData
 import com.example.imbdclone.data.model.Cast
 import com.example.imbdclone.data.model.FavoriteMovies
 import com.example.imbdclone.data.model.MovieData
 import com.example.imbdclone.data.model.MovieDetails
 import com.example.imbdclone.data.model.MoviePosters
-import com.example.imbdclone.network.TMDBApiService
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import com.example.imbdclone.data.source.local.FavoriteMoviesDao
+import com.example.imbdclone.data.source.remote.TMDBApiService
 
-class MoviesRepository {
+class MoviesRepository(
+    private val api: TMDBApiService,
+    private val moviesDao: FavoriteMoviesDao
+) {
 
-    object RetrofitInstance {
-        private const val BASE_URL = "https://api.themoviedb.org/3/"
+    suspend fun getFavorites(): List<FavoriteMovies> {
+        val response = moviesDao.getFavorites()
+        Log.d("FavoritesList", "Favorites now: $response")
+        return response
+    }
 
-        private val moshi = Moshi.Builder()
-            .add(KotlinJsonAdapterFactory())
-            .build()
+    fun isMovieFavorite(movie_id: Int): LiveData<Boolean> {
+        val response = moviesDao.isMovieFavorite(movie_id)
+        return response
+    }
 
-        private val retrofit by lazy {
-            Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .build()
-        }
+    suspend fun addToFavorites(movie: FavoriteMovies) {
+        Log.d("FavoritesRepo", "Adding movie: ${movie.movie_id}")
+        moviesDao.addToFavorites(movie)
+    }
 
-        val api: TMDBApiService by lazy {
-            retrofit.create(TMDBApiService::class.java)
-        }
+    suspend fun removeFromFavorites(movie: FavoriteMovies) {
+        Log.d("FavoritesRepo", "Removing movie: ${movie.movie_id}")
+        moviesDao.removeFromFavorites(movie)
     }
 
     suspend fun fetchLatestMovies(nextPage: Int): List<MovieData> {
         return try {
-            val response = RetrofitInstance.api.getLatestMovies(
+            val response = api.getLatestMovies(
                 page = nextPage)
             response.results
 
@@ -45,7 +49,7 @@ class MoviesRepository {
 
     suspend fun fetchMovieDetails(movieID: Int): MovieDetails {
         return try {
-            val response = RetrofitInstance.api.getMovieDetails(
+            val response = api.getMovieDetails(
                 movieID = movieID
             )
             response
@@ -57,7 +61,7 @@ class MoviesRepository {
 
     suspend fun getMovieCredits(movieID: Int): List<Cast> {
         return try {
-            val response = RetrofitInstance.api.getMovieCredits(
+            val response = api.getMovieCredits(
                 movieID = movieID
             )
             response.cast
@@ -69,29 +73,10 @@ class MoviesRepository {
 
     suspend fun getMovieImages(movieID: Int): List<MoviePosters> {
         return try {
-            val response = RetrofitInstance.api.getMovieImages(
+            val response = api.getMovieImages(
                 movieID = movieID
             )
             response.backdrops
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
-    suspend fun addToFavorites(accountID: Int) {
-        return try {
-            RetrofitInstance.api.addToFavorites(accountID = accountID)
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
-    suspend fun getFavorites(accountID: Int, page: Int): List<FavoriteMovies> {
-        return try {
-            val response = RetrofitInstance.api.getFavorites(
-                accountID = accountID,
-                page = page)
-            response.results
         } catch (e: Exception) {
             throw e
         }

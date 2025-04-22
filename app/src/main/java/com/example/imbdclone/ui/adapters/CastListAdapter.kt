@@ -1,11 +1,11 @@
-package com.example.imbdclone.data.adapters
+package com.example.imbdclone.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.imbdclone.GlideApp
+import com.bumptech.glide.Glide
 import com.example.imbdclone.R
 import com.example.imbdclone.data.model.Cast
 import com.google.android.material.imageview.ShapeableImageView
@@ -35,7 +35,7 @@ class CastListAdapter(
         fun bind(item: Cast) {
             val actorsImageUrl = "https://image.tmdb.org/t/p/w500" + item.profile_path
 
-            GlideApp.with(itemView)
+            Glide.with(itemView)
                 .load(actorsImageUrl)
                 .into(profilePhoto)
 

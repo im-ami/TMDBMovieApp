@@ -1,13 +1,12 @@
-package com.example.imbdclone
+package com.example.imbdclone.ui
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import com.example.imbdclone.favorites.FavoriteMoviesFragment
-import com.example.imbdclone.popular.LatestMoviesFragment
+import com.example.imbdclone.R
+import com.example.imbdclone.ui.favorites.FavoriteMoviesFragment
+import com.example.imbdclone.ui.popular.LatestMoviesFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
