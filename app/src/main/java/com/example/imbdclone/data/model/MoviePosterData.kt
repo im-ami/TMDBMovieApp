@@ -10,6 +10,7 @@ data class MovieResponse(
 data class MovieData(
     val id: Int,
     val title: String,
+    val is_favorite: Boolean = false,
     val overview: String,
     @Json(name = "poster_path") val posterPath: String?,
     val backdrop_path: String?,

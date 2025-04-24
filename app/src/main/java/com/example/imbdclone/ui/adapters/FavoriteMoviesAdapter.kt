@@ -11,10 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.imbdclone.R
 import com.example.imbdclone.data.model.FavoriteMovies
+import com.example.imbdclone.data.model.MovieData
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.Locale
 
-class FavoriteMoviesAdapter :
-    ListAdapter<FavoriteMovies, FavoriteMoviesAdapter.ViewHolder>(diffUtil) {
+class FavoriteMoviesAdapter(
+    private val onFavoriteClick: (FavoriteMovies) -> Unit
+) : ListAdapter<FavoriteMovies, FavoriteMoviesAdapter.ViewHolder>(diffUtil) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -25,15 +28,16 @@ class FavoriteMoviesAdapter :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item)
+        holder.bind(item, onFavoriteClick)
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val moviePoster: ImageView = itemView.findViewById(R.id.movie_poster)
         private val movieTitle: TextView = itemView.findViewById(R.id.movie_title)
         private val movieRatings: TextView = itemView.findViewById(R.id.movie_ratings)
+        private val likeButton: FloatingActionButton = itemView.findViewById(R.id.grid_fab)
 
-        fun bind(item: FavoriteMovies) {
+        fun bind(item: FavoriteMovies, onFavoriteClick: (FavoriteMovies) -> Unit) {
 
             val imageUrl = "https://image.tmdb.org/t/p/w500" + item.backdrop_path
             Glide.with(itemView)
@@ -42,6 +46,16 @@ class FavoriteMoviesAdapter :
 
             movieTitle.text = item.title
             movieRatings.text = String.format(Locale.US, "%.1f", item.vote_average)
+
+            if (item.is_favorite) {
+                likeButton.setImageResource(R.drawable.heart)
+            } else {
+                likeButton.setImageResource(R.drawable.empty_heart)
+            }
+
+            likeButton.setOnClickListener {
+                onFavoriteClick(item)
+            }
         }
     }
 

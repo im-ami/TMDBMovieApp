@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.imbdclone.R
 import com.example.imbdclone.ui.favorites.FavoriteMoviesFragment
-import com.example.imbdclone.ui.popular.LatestMoviesFragment
+import com.example.imbdclone.ui.latest.LatestMoviesFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {

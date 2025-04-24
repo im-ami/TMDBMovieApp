@@ -16,9 +16,9 @@ interface FavoriteMoviesDao {
     suspend fun removeFromFavorites(movie: FavoriteMovies)
 
     @Query("SELECT * FROM favoritemovies")
-    suspend fun getFavorites(): List<FavoriteMovies>
+    fun getFavorites(): LiveData<List<FavoriteMovies>>
 
     @Query("SELECT EXISTS(SELECT 1 FROM FavoriteMovies WHERE movie_id = :movie_id)")
-    fun isMovieFavorite(movie_id: Int): LiveData<Boolean>
+    suspend fun isMovieFavorite(movie_id: Int): Boolean
 
 }

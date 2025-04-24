@@ -8,9 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.imbdclone.di.MovieViewModelFactory
 import com.example.imbdclone.MyApp
 import com.example.imbdclone.R
+import com.example.imbdclone.data.model.FavoriteMovies
+import com.example.imbdclone.di.MovieViewModelFactory
 import com.example.imbdclone.ui.adapters.FavoriteMoviesAdapter
 
 class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
@@ -21,7 +22,7 @@ class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
 
     private val viewModel: FavoriteMoviesViewModel by viewModels {
         val app = requireActivity().application as MyApp
-        MovieViewModelFactory(app.repository)
+        MovieViewModelFactory(app.repository, app.favoritesUseCase)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,10 +34,12 @@ class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
 
         val layoutManager = GridLayoutManager(requireContext(), 2)
         favoritesList.layoutManager = layoutManager
-        favoriteMoviesAdapter = FavoriteMoviesAdapter()
+
+        favoriteMoviesAdapter = FavoriteMoviesAdapter { movie ->
+            viewModel.removeFromFavorites(movie)
+        }
         favoritesList.adapter = favoriteMoviesAdapter
 
-        viewModel.loadFavoriteMovies()
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             when(state) {
 
