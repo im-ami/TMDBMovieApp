@@ -1,18 +1,21 @@
 package com.example.imbdclone.ui.favorites
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.imbdclone.MyApp
 import com.example.imbdclone.R
-import com.example.imbdclone.data.model.FavoriteMovies
 import com.example.imbdclone.di.MovieViewModelFactory
 import com.example.imbdclone.ui.adapters.FavoriteMoviesAdapter
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
     private lateinit var favoriteMoviesView: ConstraintLayout
@@ -42,8 +45,11 @@ class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
 
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             when(state) {
+                FavoriteMoviesViewModel.FavoriteMoviesUiState.Loading -> progressBar.visibility = View.VISIBLE
 
                 is FavoriteMoviesViewModel.FavoriteMoviesUiState.Success -> {
+                    progressBar.visibility = View.GONE
+
                     favoriteMoviesAdapter.submitList(state.favoriteMoviesList)
                     showContent()
                 }
@@ -54,6 +60,7 @@ class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
             }
         }
     }
+
 
     private fun showContent() {
         progressBar.visibility = View.GONE

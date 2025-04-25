@@ -1,5 +1,6 @@
 package com.example.imbdclone.usecase
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.example.imbdclone.data.model.FavoriteMovies
 import com.example.imbdclone.data.repository.LocalRepository
@@ -34,6 +35,7 @@ class FavoritesUseCase(private val localRepository: LocalRepository) {
             backdrop_path = details.backdrop_path,
             vote_average = details.vote_average
         )
+        Log.d("USE CASE", "remove from favs is being called")
         localRepository.removeFromFavorites(favorite)
     }
 }

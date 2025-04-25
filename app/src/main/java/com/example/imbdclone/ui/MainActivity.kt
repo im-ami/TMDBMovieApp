@@ -1,9 +1,9 @@
 package com.example.imbdclone.ui
 
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.example.imbdclone.R
 import com.example.imbdclone.ui.favorites.FavoriteMoviesFragment
 import com.example.imbdclone.ui.latest.LatestMoviesFragment
@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         latestMoviesFragment = LatestMoviesFragment()
         favoriteMoviesFragment = FavoriteMoviesFragment()
-        bottomNavigationView = findViewById(R.id.bottom_nav_bar)
+        bottomNavigationView =   findViewById(R.id.bottom_nav_bar)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -45,6 +45,16 @@ class MainActivity : AppCompatActivity() {
                 else -> true
             }
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (supportFragmentManager.backStackEntryCount >= 1) {
+                    supportFragmentManager.popBackStack()
+                } else {
+                    finish()
+                }
+            }
+        })
     }
 
     private fun switchFragments(fragment: Fragment) {
@@ -54,9 +64,9 @@ class MainActivity : AppCompatActivity() {
 
         val transaction = supportFragmentManager.beginTransaction()
         if (fragment == latestMoviesFragment) {
-            supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+//            supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         } else {
-            transaction.addToBackStack(null)
+//            transaction.addToBackStack(null)
         }
 
         transaction.replace(R.id.main_fragment, fragment)

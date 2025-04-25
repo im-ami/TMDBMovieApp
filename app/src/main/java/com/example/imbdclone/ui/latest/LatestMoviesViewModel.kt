@@ -90,7 +90,7 @@ class LatestMoviesViewModel(
     sealed interface LatestMoviesUiState {
         data object Loading : LatestMoviesUiState
         data class Success(
-            val result: List<MovieData>
+            val latestMoviesList: List<MovieData>
         ) : LatestMoviesUiState
         data class Error(val message: String? = null) : LatestMoviesUiState
     }

@@ -82,7 +82,7 @@ class LatestMoviesFragment : Fragment(R.layout.latest_movies_fragment) {
                 is LatestMoviesViewModel.LatestMoviesUiState.Success -> {
                     progressBar.visibility = View.GONE
 
-                    latestMoviesAdapter.submitList(state.result)
+                    latestMoviesAdapter.submitList(state.latestMoviesList)
                     showContent()
                 }
                 is LatestMoviesViewModel.LatestMoviesUiState.Error -> hideContent()

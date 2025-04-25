@@ -16,51 +16,40 @@ class FavoriteMoviesViewModel(
     private val _uiState = MutableLiveData<FavoriteMoviesUiState>()
     val uiState: LiveData<FavoriteMoviesUiState> = _uiState
 
-    private var isLoading = false
-    private val favoritesList = mutableListOf<FavoriteMovies>()
-
     init {
         viewModelScope.launch {
             favoritesUseCase.loadFavoriteMovies().observeForever { favorites ->
-                favoritesList.clear()
-                favoritesList.addAll(favorites)
-                submitFavoriteMovies()
+                submitFavoriteMovies(favorites)
             }
         }
     }
 
-    private fun submitFavoriteMovies() {
-        if (isLoading) return
-        isLoading = true
-
-        viewModelScope.launch {
-            try {
-                _uiState.value = FavoriteMoviesUiState.Success(
-                    favoriteMoviesList = favoritesList
-                )
-                isLoading = false
-
-            } catch (e: Exception) {
-                _uiState.value = FavoriteMoviesUiState.Error(e.message)
-                isLoading = false
-            }
-        }
+    private fun submitFavoriteMovies(favorites: List<FavoriteMovies>) {
+        _uiState.value = FavoriteMoviesUiState.Success(favorites)
     }
 
     fun removeFromFavorites(details: FavoriteMovies) {
         viewModelScope.launch {
             try {
                 favoritesUseCase.removeFromFavorites(details)
+                Log.d("FAV VIEW MODEL", "remove from favs is being called")
             } catch (e: Exception) {
                 _uiState.value = FavoriteMoviesUiState.Error(e.message)
             }
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        Log.d(this.javaClass.name, "Cleared Fav Viewmodel")
+    }
+
     sealed interface FavoriteMoviesUiState {
+        data object Loading : FavoriteMoviesUiState
         data class Success(
             val favoriteMoviesList: List<FavoriteMovies>
         ) : FavoriteMoviesUiState
+
         data class Error(val message: String? = null) : FavoriteMoviesUiState
     }
 }
