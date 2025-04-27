@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.imbdclone.MyApp
 import com.example.imbdclone.R
-import com.example.imbdclone.data.model.FavoriteMovies
 import com.example.imbdclone.di.MovieViewModelFactory
 import com.example.imbdclone.ui.adapters.FavoriteMoviesAdapter
 
@@ -42,9 +41,8 @@ class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
 
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             when(state) {
-
                 is FavoriteMoviesViewModel.FavoriteMoviesUiState.Success -> {
-                    favoriteMoviesAdapter.submitList(state.favoriteMoviesList)
+                    favoriteMoviesAdapter.submitList(state.favoriteMoviesList.toList())
                     showContent()
                 }
 

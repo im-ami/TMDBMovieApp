@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.imbdclone.R
 import com.example.imbdclone.data.model.FavoriteMovies
-import com.example.imbdclone.data.model.MovieData
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.Locale
 
@@ -46,12 +45,7 @@ class FavoriteMoviesAdapter(
 
             movieTitle.text = item.title
             movieRatings.text = String.format(Locale.US, "%.1f", item.vote_average)
-
-            if (item.is_favorite) {
-                likeButton.setImageResource(R.drawable.heart)
-            } else {
-                likeButton.setImageResource(R.drawable.empty_heart)
-            }
+            likeButton.setImageResource(R.drawable.heart)
 
             likeButton.setOnClickListener {
                 onFavoriteClick(item)
@@ -66,7 +60,11 @@ class FavoriteMoviesAdapter(
             }
 
             override fun areContentsTheSame(oldItem: FavoriteMovies, newItem: FavoriteMovies): Boolean {
-                return oldItem == newItem
+                return oldItem.movie_id == newItem.movie_id &&
+                        oldItem.is_favorite == newItem.is_favorite &&
+                        oldItem.title == newItem.title &&
+                        oldItem.backdrop_path == newItem.backdrop_path &&
+                        oldItem.vote_average == newItem.vote_average
             }
         }
     }

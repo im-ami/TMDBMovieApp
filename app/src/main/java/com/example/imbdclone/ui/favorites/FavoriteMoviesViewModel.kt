@@ -1,6 +1,5 @@
 package com.example.imbdclone.ui.favorites
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,7 +15,6 @@ class FavoriteMoviesViewModel(
     private val _uiState = MutableLiveData<FavoriteMoviesUiState>()
     val uiState: LiveData<FavoriteMoviesUiState> = _uiState
 
-    private var isLoading = false
     private val favoritesList = mutableListOf<FavoriteMovies>()
 
     init {
@@ -24,25 +22,7 @@ class FavoriteMoviesViewModel(
             favoritesUseCase.loadFavoriteMovies().observeForever { favorites ->
                 favoritesList.clear()
                 favoritesList.addAll(favorites)
-                submitFavoriteMovies()
-            }
-        }
-    }
-
-    private fun submitFavoriteMovies() {
-        if (isLoading) return
-        isLoading = true
-
-        viewModelScope.launch {
-            try {
-                _uiState.value = FavoriteMoviesUiState.Success(
-                    favoriteMoviesList = favoritesList
-                )
-                isLoading = false
-
-            } catch (e: Exception) {
-                _uiState.value = FavoriteMoviesUiState.Error(e.message)
-                isLoading = false
+                _uiState.value = FavoriteMoviesUiState.Success(favoriteMoviesList = favoritesList)
             }
         }
     }
