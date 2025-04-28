@@ -46,9 +46,9 @@ class MoviesAdapter(
                 .into(moviePoster)
 
             movieTitle.text = item.title
-            movieRatings.text = String.format(Locale.US,"%.1f", item.vote_average)
+            movieRatings.text = String.format(Locale.US,"%.1f", item.voteAverage)
 
-            if (item.is_favorite) {
+            if (item.isFavorite) {
                 likeButton.setImageResource(R.drawable.heart)
             } else {
                 likeButton.setImageResource(R.drawable.empty_heart)

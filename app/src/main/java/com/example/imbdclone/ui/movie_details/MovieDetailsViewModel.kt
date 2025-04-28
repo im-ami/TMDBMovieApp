@@ -8,12 +8,12 @@ import com.example.imbdclone.data.model.Cast
 import com.example.imbdclone.data.model.FavoriteMovies
 import com.example.imbdclone.data.model.MovieDetails
 import com.example.imbdclone.data.model.MoviePosters
-import com.example.imbdclone.data.repository.MoviesRepository
+import com.example.imbdclone.data.repository.CentralRepository
 import com.example.imbdclone.usecase.FavoritesUseCase
 import kotlinx.coroutines.launch
 
 class MovieDetailsViewModel(
-    private val moviesRepository: MoviesRepository,
+    private val centralRepository: CentralRepository,
     private val favoritesUseCase: FavoritesUseCase
 ) : ViewModel() {
 
@@ -28,9 +28,9 @@ class MovieDetailsViewModel(
 
         viewModelScope.launch {
             try {
-                val movie = moviesRepository.fetchMovieDetails(movieId)
-                val credits = moviesRepository.getMovieCredits(movieId)
-                val images = moviesRepository.getMovieImages(movieId)
+                val movie = centralRepository.fetchMovieDetails(movieId)
+                val credits = centralRepository.getMovieCredits(movieId)
+                val images = centralRepository.getMovieImages(movieId)
 
                 _uiState.value = MovieDetailsUiState.Success(
                     movie = movie,

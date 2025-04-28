@@ -30,7 +30,7 @@ class MovieImagesListAdapter(
         private val movieImage: ShapeableImageView = itemView.findViewById(R.id.movie_image)
 
         fun bind(item: MoviePosters) {
-            val movieImageUrl = "https://image.tmdb.org/t/p/w500" + item.file_path
+            val movieImageUrl = "https://image.tmdb.org/t/p/w500" + item.filePath
 
             Glide.with(itemView)
                 .load(movieImageUrl)

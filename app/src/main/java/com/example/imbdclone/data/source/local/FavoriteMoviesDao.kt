@@ -18,7 +18,7 @@ interface FavoriteMoviesDao {
     @Query("SELECT * FROM favoritemovies")
     fun getFavorites(): LiveData<List<FavoriteMovies>>
 
-    @Query("SELECT EXISTS(SELECT 1 FROM FavoriteMovies WHERE movie_id = :movie_id)")
-    suspend fun isMovieFavorite(movie_id: Int): Boolean
+    @Query("SELECT EXISTS(SELECT 1 FROM FavoriteMovies WHERE movie_id = :movieId)")
+    suspend fun isMovieFavorite(movieId: Int): Boolean
 
 }

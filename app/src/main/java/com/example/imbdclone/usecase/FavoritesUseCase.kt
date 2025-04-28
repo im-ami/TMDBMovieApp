@@ -2,38 +2,26 @@ package com.example.imbdclone.usecase
 
 import androidx.lifecycle.LiveData
 import com.example.imbdclone.data.model.FavoriteMovies
-import com.example.imbdclone.data.repository.LocalRepository
+import com.example.imbdclone.data.repository.CentralRepository
 
-class FavoritesUseCase(private val localRepository: LocalRepository) {
+class FavoritesUseCase(private val repository: CentralRepository) {
 
-    suspend fun loadFavoriteMovies(): LiveData<List<FavoriteMovies>> {
-        val favorites = localRepository.getFavorites()
+    fun loadFavoriteMovies(): LiveData<List<FavoriteMovies>> {
+        val favorites = repository.getFavorites()
         return favorites
     }
 
     suspend fun isMovieFavorite(movieId: Int): Boolean {
-        return localRepository.isMovieFavorite(movieId)
+        return repository.isMovieFavorite(movieId)
     }
 
     suspend fun addToFavorites(details: FavoriteMovies) {
-        val favorite = FavoriteMovies(
-            movie_id = details.movie_id,
-            is_favorite = true,
-            title = details.title,
-            backdrop_path = details.backdrop_path,
-            vote_average = details.vote_average
-        )
-        localRepository.addToFavorites(favorite)
+        val favorite = FavoriteMovies(details.movie_id, true, details.title, details.backdrop_path, details.vote_average)
+        repository.addToFavorites(favorite)
     }
 
     suspend fun removeFromFavorites(details: FavoriteMovies) {
-        val favorite = FavoriteMovies(
-            movie_id = details.movie_id,
-            is_favorite = false,
-            title = details.title,
-            backdrop_path = details.backdrop_path,
-            vote_average = details.vote_average
-        )
-        localRepository.removeFromFavorites(favorite)
+        val favorite = FavoriteMovies(details.movie_id, false, details.title, details.backdrop_path, details.vote_average)
+        repository.removeFromFavorites(favorite)
     }
 }

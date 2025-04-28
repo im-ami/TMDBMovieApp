@@ -1,12 +1,35 @@
 package com.example.imbdclone.data.repository
 
+import androidx.lifecycle.LiveData
 import com.example.imbdclone.data.model.Cast
+import com.example.imbdclone.data.model.FavoriteMovies
 import com.example.imbdclone.data.model.MovieData
 import com.example.imbdclone.data.model.MovieDetails
 import com.example.imbdclone.data.model.MoviePosters
+import com.example.imbdclone.data.source.local.FavoriteMoviesDao
 import com.example.imbdclone.data.source.remote.TMDBApiService
 
-class MoviesRepository(private val api: TMDBApiService) {
+class CentralRepository(
+    private val api: TMDBApiService,
+    private val moviesDao: FavoriteMoviesDao) {
+    
+    fun getFavorites(): LiveData<List<FavoriteMovies>> {
+        val response = moviesDao.getFavorites()
+        return response
+    }
+
+    suspend fun isMovieFavorite(movieId: Int): Boolean {
+        val response = moviesDao.isMovieFavorite(movieId)
+        return response
+    }
+
+    suspend fun addToFavorites(movie: FavoriteMovies) {
+        moviesDao.addToFavorites(movie)
+    }
+
+    suspend fun removeFromFavorites(movie: FavoriteMovies) {
+        moviesDao.removeFromFavorites(movie)
+    }
 
     suspend fun fetchLatestMovies(nextPage: Int): List<MovieData> {
         return try {

@@ -107,13 +107,7 @@ class MovieDetailsFragment : Fragment() {
         val voteAverage = requireArguments().getDouble(VOTE_AVERAGE)
 
         binding.fab.setOnClickListener {
-            val details = FavoriteMovies(
-                movie_id = movieID,
-                is_favorite = isFavorite,
-                title = title,
-                backdrop_path = posterPath,
-                vote_average = voteAverage
-            )
+            val details = FavoriteMovies(movieID, isFavorite, title, posterPath, voteAverage)
 
             if (!isFavorite) {
                 isFavorite = true
@@ -152,15 +146,15 @@ class MovieDetailsFragment : Fragment() {
     }
 
     private fun setMovieDetails(view: View, details: MovieDetails) {
-        val backgroundImageUrl = "https://image.tmdb.org/t/p/original${details.backdrop_path}"
+        val backgroundImageUrl = "https://image.tmdb.org/t/p/original${details.backdropPath}"
         val posterImageUrl = "https://image.tmdb.org/t/p/original${details.posterPath}"
 
         Glide.with(view).load(backgroundImageUrl).into(binding.backdrop)
         Glide.with(view).load(posterImageUrl).into(binding.poster)
         binding.fullTitle.text = details.title
-        binding.ratingNumber.text = String.format(Locale.US,"%.1f", details.vote_average)
-        binding.ratingBar.rating = details.vote_average.toFloat()
-        binding.releaseYear.text = details.release_date
+        binding.ratingNumber.text = String.format(Locale.US,"%.1f", details.voteAverage)
+        binding.ratingBar.rating = details.voteAverage.toFloat()
+        binding.releaseYear.text = details.releaseDate
         binding.tagline.text = details.tagline
         binding.synopsis.text = details.overview
 

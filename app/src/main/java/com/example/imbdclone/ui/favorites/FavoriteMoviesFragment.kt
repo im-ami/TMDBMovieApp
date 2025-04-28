@@ -1,43 +1,49 @@
 package com.example.imbdclone.ui.favorites
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.ProgressBar
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.imbdclone.MyApp
-import com.example.imbdclone.R
+import com.example.imbdclone.databinding.FavoriteMoviesFragmentBinding
 import com.example.imbdclone.di.MovieViewModelFactory
 import com.example.imbdclone.ui.adapters.FavoriteMoviesAdapter
 
-class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
-    private lateinit var favoriteMoviesView: ConstraintLayout
-    private lateinit var favoritesList: RecyclerView
-    private lateinit var favoriteMoviesAdapter: FavoriteMoviesAdapter
-    private lateinit var progressBar: ProgressBar
+class FavoriteMoviesFragment: Fragment() {
 
     private val viewModel: FavoriteMoviesViewModel by viewModels {
         val app = requireActivity().application as MyApp
         MovieViewModelFactory(app.repository, app.favoritesUseCase)
     }
 
+    private lateinit var binding: FavoriteMoviesFragmentBinding
+
+    private lateinit var favoriteMoviesAdapter: FavoriteMoviesAdapter
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        super.onCreateView(inflater, container, savedInstanceState)
+
+        binding = FavoriteMoviesFragmentBinding.inflate(inflater)
+        return binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        progressBar = view.findViewById(R.id.progressBar2)
-        favoriteMoviesView = view.findViewById(R.id.main_favorites_view)
-        favoritesList = view.findViewById(R.id.favorites)
-
         val layoutManager = GridLayoutManager(requireContext(), 2)
-        favoritesList.layoutManager = layoutManager
+        binding.favorites.layoutManager = layoutManager
 
         favoriteMoviesAdapter = FavoriteMoviesAdapter { movie ->
             viewModel.removeFromFavorites(movie)
         }
-        favoritesList.adapter = favoriteMoviesAdapter
+        binding.favorites.adapter = favoriteMoviesAdapter
 
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             when(state) {
@@ -54,12 +60,12 @@ class FavoriteMoviesFragment: Fragment(R.layout.favorite_movies_fragment) {
     }
 
     private fun showContent() {
-        progressBar.visibility = View.GONE
-        favoriteMoviesView.visibility = View.VISIBLE
+        binding.progressBar2.visibility = View.GONE
+        binding.mainFavoritesView.visibility = View.VISIBLE
     }
 
     private fun hideContent() {
-        favoriteMoviesView.visibility = View.GONE
-        progressBar.visibility = View.GONE
+        binding.mainFavoritesView.visibility = View.GONE
+        binding.progressBar2.visibility = View.GONE
     }
 }

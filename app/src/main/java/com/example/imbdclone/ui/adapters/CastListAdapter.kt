@@ -33,7 +33,7 @@ class CastListAdapter(
         private val characterName: TextView = itemView.findViewById(R.id.character_name)
 
         fun bind(item: Cast) {
-            val actorsImageUrl = "https://image.tmdb.org/t/p/w500" + item.profile_path
+            val actorsImageUrl = "https://image.tmdb.org/t/p/w500" + item.profilePath
 
             Glide.with(itemView)
                 .load(actorsImageUrl)

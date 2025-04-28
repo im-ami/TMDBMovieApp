@@ -2,16 +2,17 @@ package com.example.imbdclone.ui.latest
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.imbdclone.data.model.FavoriteMovies
 import com.example.imbdclone.data.model.MovieData
-import com.example.imbdclone.data.repository.MoviesRepository
+import com.example.imbdclone.data.repository.CentralRepository
 import com.example.imbdclone.usecase.FavoritesUseCase
 import kotlinx.coroutines.launch
 
 class LatestMoviesViewModel(
-    private val moviesRepository: MoviesRepository,
+    private val repository: CentralRepository,
     private val favoritesUseCase: FavoritesUseCase
 ) : ViewModel() {
 
@@ -23,16 +24,17 @@ class LatestMoviesViewModel(
     private val favoriteMovieIds = mutableListOf<Int>()
     private val moviesList = mutableListOf<MovieData>()
 
+    private val observer = Observer<List<FavoriteMovies>> { favorites ->
+        favoriteMovieIds.clear()
+        favorites.forEach { favorite ->
+            favoriteMovieIds.add(favorite.movie_id)
+        }
+        updateMovieFavorites()
+    }
 
     init {
         viewModelScope.launch {
-            favoritesUseCase.loadFavoriteMovies().observeForever { favorites ->
-                favoriteMovieIds.clear()
-                favorites.forEach { favorite ->
-                    favoriteMovieIds.add(favorite.movie_id)
-                }
-                updateMovieFavorites()
-            }
+            favoritesUseCase.loadFavoriteMovies().observeForever(observer)
         }
         loadNextPage()
     }
@@ -40,9 +42,9 @@ class LatestMoviesViewModel(
     private fun updateMovieFavorites() {
         val updatedMovies = moviesList.map { movie ->
             if (favoriteMovieIds.contains(movie.id)) {
-                movie.copy(is_favorite = true)
+                movie.copy(isFavorite = true)
             } else {
-                movie.copy(is_favorite = false)
+                movie.copy(isFavorite = false)
             }
         }
         _uiState.value = LatestMoviesUiState.Success(updatedMovies)
@@ -54,7 +56,7 @@ class LatestMoviesViewModel(
 
         viewModelScope.launch {
             try {
-                val result = moviesRepository.fetchLatestMovies(currentPage)
+                val result = repository.fetchLatestMovies(currentPage)
                 moviesList.addAll(result)
                 updateMovieFavorites()
                 currentPage++
@@ -85,6 +87,11 @@ class LatestMoviesViewModel(
                 _uiState.value = LatestMoviesUiState.Error(e.message)
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        favoritesUseCase.loadFavoriteMovies().removeObserver(observer)
     }
 
     sealed interface LatestMoviesUiState {

@@ -1,10 +1,9 @@
 package com.example.imbdclone.ui.latest
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -12,45 +11,46 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.imbdclone.MyApp
 import com.example.imbdclone.R
 import com.example.imbdclone.data.model.FavoriteMovies
+import com.example.imbdclone.databinding.LatestMoviesFragmentBinding
 import com.example.imbdclone.di.MovieViewModelFactory
 import com.example.imbdclone.ui.adapters.MoviesAdapter
 import com.example.imbdclone.ui.movie_details.MovieDetailsFragment
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class LatestMoviesFragment : Fragment(R.layout.latest_movies_fragment) {
+class LatestMoviesFragment : Fragment() {
 
     private val viewModel: LatestMoviesViewModel by viewModels {
         val app = requireActivity().application as MyApp
         MovieViewModelFactory(app.repository, app.favoritesUseCase)
     }
 
-    private lateinit var latestMoviesList: RecyclerView
-    private lateinit var latestMoviesAdapter: MoviesAdapter
-    private lateinit var progressBar: ProgressBar
-    private lateinit var latestMoviesView: ConstraintLayout
-    private lateinit var favoriteButton: FloatingActionButton
-    private lateinit var fallbackContainer: LinearLayout
+    private lateinit var binding: LatestMoviesFragmentBinding
 
+    private lateinit var latestMoviesAdapter: MoviesAdapter
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        super.onCreateView(inflater, container, savedInstanceState)
+
+        binding = LatestMoviesFragmentBinding.inflate(inflater)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        latestMoviesView = view.findViewById(R.id.main_latest_view)
-        progressBar = view.findViewById(R.id.progressBar)
-        fallbackContainer = view.findViewById(R.id.fallback_container)
-        latestMoviesList = view.findViewById(R.id.latest)
-        favoriteButton = view.findViewById(R.id.grid_fab)
-
         val layoutManager = GridLayoutManager(requireContext(), 2)
-        latestMoviesList.layoutManager = layoutManager
+        binding.latest.layoutManager = layoutManager
 
         latestMoviesAdapter = MoviesAdapter (
             onItemClick = { movie ->
                 val movieID = movie.id
-                val isFavorite = movie.is_favorite
+                val isFavorite = movie.isFavorite
                 val posterPath = movie.posterPath
                 val movieTitle = movie.title
-                val voteAverage = movie.vote_average
+                val voteAverage = movie.voteAverage
 
                 val fragment = MovieDetailsFragment.newInstance(
                     movieID,
@@ -65,22 +65,22 @@ class LatestMoviesFragment : Fragment(R.layout.latest_movies_fragment) {
                     .commit()
             },
             onFavoriteClick = { movie ->
-                val favoriteMovie = FavoriteMovies(movie.id, movie.is_favorite, movie.title, movie.posterPath, movie.vote_average)
-                if (movie.is_favorite) {
+                val favoriteMovie = FavoriteMovies(movie.id, movie.isFavorite, movie.title, movie.posterPath, movie.voteAverage)
+                if (movie.isFavorite) {
                     viewModel.removeFromFavorites(favoriteMovie)
                 } else {
                     viewModel.addToFavorites(favoriteMovie)
                 }
         })
 
-        latestMoviesList.adapter = latestMoviesAdapter
+        binding.latest.adapter = latestMoviesAdapter
 
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             when(state) {
-                is LatestMoviesViewModel.LatestMoviesUiState.Loading -> progressBar.visibility = View.VISIBLE
+                is LatestMoviesViewModel.LatestMoviesUiState.Loading -> binding.progressBar.visibility = View.VISIBLE
 
                 is LatestMoviesViewModel.LatestMoviesUiState.Success -> {
-                    progressBar.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
 
                     latestMoviesAdapter.submitList(state.result)
                     showContent()
@@ -89,7 +89,7 @@ class LatestMoviesFragment : Fragment(R.layout.latest_movies_fragment) {
             }
         }
 
-        latestMoviesList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.latest.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
@@ -105,14 +105,14 @@ class LatestMoviesFragment : Fragment(R.layout.latest_movies_fragment) {
     }
 
     private fun showContent() {
-        progressBar.visibility = View.GONE
-        latestMoviesView.visibility = View.VISIBLE
-        fallbackContainer.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
+        binding.mainLatestView.visibility = View.VISIBLE
+        binding.fallbackContainer.visibility = View.GONE
     }
 
     private fun hideContent() {
-        latestMoviesView.visibility = View.GONE
-        progressBar.visibility = View.GONE
-        fallbackContainer.visibility = View.VISIBLE
+        binding.mainLatestView.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
+        binding.fallbackContainer.visibility = View.VISIBLE
     }
 }

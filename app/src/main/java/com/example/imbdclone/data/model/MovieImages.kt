@@ -1,9 +1,11 @@
 package com.example.imbdclone.data.model
 
+import com.squareup.moshi.Json
+
 data class MovieImages(
-    val backdrops: List<MoviePosters>
+    @Json(name = "backdrops") val backdrops: List<MoviePosters>
 )
 
 data class MoviePosters(
-    val file_path: String
+    @Json(name = "file_path") val filePath: String
 )

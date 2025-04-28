@@ -2,6 +2,7 @@ package com.example.imbdclone.ui.favorites
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.imbdclone.data.model.FavoriteMovies
@@ -16,14 +17,15 @@ class FavoriteMoviesViewModel(
     val uiState: LiveData<FavoriteMoviesUiState> = _uiState
 
     private val favoritesList = mutableListOf<FavoriteMovies>()
+    private val observer = Observer<List<FavoriteMovies>> { favorites ->
+        favoritesList.clear()
+        favoritesList.addAll(favorites)
+        _uiState.value = FavoriteMoviesUiState.Success(favoriteMoviesList = favoritesList)
+    }
 
     init {
         viewModelScope.launch {
-            favoritesUseCase.loadFavoriteMovies().observeForever { favorites ->
-                favoritesList.clear()
-                favoritesList.addAll(favorites)
-                _uiState.value = FavoriteMoviesUiState.Success(favoriteMoviesList = favoritesList)
-            }
+            favoritesUseCase.loadFavoriteMovies().observeForever(observer)
         }
     }
 
@@ -35,6 +37,11 @@ class FavoriteMoviesViewModel(
                 _uiState.value = FavoriteMoviesUiState.Error(e.message)
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        favoritesUseCase.loadFavoriteMovies().removeObserver(observer)
     }
 
     sealed interface FavoriteMoviesUiState {
