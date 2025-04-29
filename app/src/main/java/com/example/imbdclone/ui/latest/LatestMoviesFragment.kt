@@ -20,7 +20,7 @@ class LatestMoviesFragment : Fragment() {
 
     private val viewModel: LatestMoviesViewModel by viewModels {
         val app = requireActivity().application as MyApp
-        MovieViewModelFactory(app.repository, app.favoritesUseCase)
+        MovieViewModelFactory(app.repository)
     }
 
     private lateinit var binding: LatestMoviesFragmentBinding
@@ -82,7 +82,7 @@ class LatestMoviesFragment : Fragment() {
                 is LatestMoviesViewModel.LatestMoviesUiState.Success -> {
                     binding.progressBar.visibility = View.GONE
 
-                    latestMoviesAdapter.submitList(state.result)
+                    latestMoviesAdapter.submitList(state.result.toList())
                     showContent()
                 }
                 is LatestMoviesViewModel.LatestMoviesUiState.Error -> hideContent()

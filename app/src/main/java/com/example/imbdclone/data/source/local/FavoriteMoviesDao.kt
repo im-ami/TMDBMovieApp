@@ -20,5 +20,4 @@ interface FavoriteMoviesDao {
 
     @Query("SELECT EXISTS(SELECT 1 FROM FavoriteMovies WHERE movie_id = :movieId)")
     suspend fun isMovieFavorite(movieId: Int): Boolean
-
 }

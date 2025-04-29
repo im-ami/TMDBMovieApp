@@ -7,14 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.imbdclone.data.model.FavoriteMovies
 import com.example.imbdclone.data.model.MovieData
-import com.example.imbdclone.data.repository.CentralRepository
-import com.example.imbdclone.usecase.FavoritesUseCase
+import com.example.imbdclone.data.repository.CentralRepositoryImpl
 import kotlinx.coroutines.launch
 
 class LatestMoviesViewModel(
-    private val repository: CentralRepository,
-    private val favoritesUseCase: FavoritesUseCase
-) : ViewModel() {
+    private val repository: CentralRepositoryImpl) : ViewModel() {
 
     private val _uiState = MutableLiveData<LatestMoviesUiState>()
     val uiState: LiveData<LatestMoviesUiState> = _uiState
@@ -24,17 +21,17 @@ class LatestMoviesViewModel(
     private val favoriteMovieIds = mutableListOf<Int>()
     private val moviesList = mutableListOf<MovieData>()
 
-    private val observer = Observer<List<FavoriteMovies>> { favorites ->
+    private val favoritesObserver = Observer<List<FavoriteMovies>> { favorites ->
         favoriteMovieIds.clear()
         favorites.forEach { favorite ->
-            favoriteMovieIds.add(favorite.movie_id)
+            favoriteMovieIds.add(favorite.movieId)
         }
         updateMovieFavorites()
     }
 
     init {
         viewModelScope.launch {
-            favoritesUseCase.loadFavoriteMovies().observeForever(observer)
+            repository.getFavorites().observeForever(favoritesObserver)
         }
         loadNextPage()
     }
@@ -72,7 +69,7 @@ class LatestMoviesViewModel(
     fun addToFavorites(details: FavoriteMovies) {
         viewModelScope.launch {
             try {
-                favoritesUseCase.addToFavorites(details)
+                repository.addToFavorites(details)
             } catch (e: Exception) {
                 _uiState.value = LatestMoviesUiState.Error(e.message)
             }
@@ -82,7 +79,7 @@ class LatestMoviesViewModel(
     fun removeFromFavorites(details: FavoriteMovies) {
         viewModelScope.launch {
             try {
-                favoritesUseCase.removeFromFavorites(details)
+                repository.removeFromFavorites(details)
             } catch (e: Exception) {
                 _uiState.value = LatestMoviesUiState.Error(e.message)
             }
@@ -91,7 +88,7 @@ class LatestMoviesViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        favoritesUseCase.loadFavoriteMovies().removeObserver(observer)
+        repository.getFavorites().removeObserver(favoritesObserver)
     }
 
     sealed interface LatestMoviesUiState {

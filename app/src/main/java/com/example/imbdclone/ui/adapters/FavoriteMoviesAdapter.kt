@@ -38,13 +38,13 @@ class FavoriteMoviesAdapter(
 
         fun bind(item: FavoriteMovies, onFavoriteClick: (FavoriteMovies) -> Unit) {
 
-            val imageUrl = "https://image.tmdb.org/t/p/w500" + item.backdrop_path
+            val imageUrl = "https://image.tmdb.org/t/p/w500" + item.backdropPath
             Glide.with(itemView)
                 .load(imageUrl)
                 .into(moviePoster)
 
             movieTitle.text = item.title
-            movieRatings.text = String.format(Locale.US, "%.1f", item.vote_average)
+            movieRatings.text = String.format(Locale.US, "%.1f", item.voteAverage)
             likeButton.setImageResource(R.drawable.heart)
 
             likeButton.setOnClickListener {
@@ -56,15 +56,15 @@ class FavoriteMoviesAdapter(
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<FavoriteMovies>() {
             override fun areItemsTheSame(oldItem: FavoriteMovies, newItem: FavoriteMovies): Boolean {
-                return oldItem.movie_id == newItem.movie_id
+                return oldItem.movieId == newItem.movieId
             }
 
             override fun areContentsTheSame(oldItem: FavoriteMovies, newItem: FavoriteMovies): Boolean {
-                return oldItem.movie_id == newItem.movie_id &&
-                        oldItem.is_favorite == newItem.is_favorite &&
+                return oldItem.movieId == newItem.movieId &&
+                        oldItem.isFavorite == newItem.isFavorite &&
                         oldItem.title == newItem.title &&
-                        oldItem.backdrop_path == newItem.backdrop_path &&
-                        oldItem.vote_average == newItem.vote_average
+                        oldItem.backdropPath == newItem.backdropPath &&
+                        oldItem.voteAverage == newItem.voteAverage
             }
         }
     }

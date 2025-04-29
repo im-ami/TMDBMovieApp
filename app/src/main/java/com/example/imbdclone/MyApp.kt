@@ -2,17 +2,15 @@ package com.example.imbdclone
 
 import android.app.Application
 import androidx.room.Room
-import com.example.imbdclone.data.repository.CentralRepository
+import com.example.imbdclone.data.repository.CentralRepositoryImpl
+import com.example.imbdclone.data.repository.LocalRepository
+import com.example.imbdclone.data.repository.RemoteRepository
 import com.example.imbdclone.data.source.local.FavoritesDB
 import com.example.imbdclone.data.source.remote.TMDBApiService
-import com.example.imbdclone.usecase.FavoritesUseCase
 
 class MyApp : Application() {
 
-    lateinit var repository: CentralRepository
-        private set
-
-    lateinit var favoritesUseCase: FavoritesUseCase
+    lateinit var repository: CentralRepositoryImpl
         private set
 
     override fun onCreate() {
@@ -27,8 +25,10 @@ class MyApp : Application() {
         ).build()
         val dao = db.dao
 
-        repository = CentralRepository(api, dao)
-        favoritesUseCase = FavoritesUseCase(repository)
+        val localRepository = LocalRepository(dao)
+        val remoteRepository = RemoteRepository(api)
+
+        repository = CentralRepositoryImpl(localRepository, remoteRepository)
     }
 }
 

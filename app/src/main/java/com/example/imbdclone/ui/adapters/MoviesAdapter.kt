@@ -67,7 +67,11 @@ class MoviesAdapter(
             }
 
             override fun areContentsTheSame(oldItem: MovieData, newItem: MovieData): Boolean {
-                return oldItem == newItem
+                return oldItem.id == newItem.id &&
+                        oldItem.title == newItem.title &&
+                        oldItem.isFavorite == newItem.isFavorite &&
+                        oldItem.posterPath == newItem.posterPath &&
+                        oldItem.voteAverage == newItem.voteAverage
             }
         }
     }

@@ -6,11 +6,11 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.imbdclone.data.model.FavoriteMovies
-import com.example.imbdclone.usecase.FavoritesUseCase
+import com.example.imbdclone.data.repository.CentralRepositoryImpl
 import kotlinx.coroutines.launch
 
 class FavoriteMoviesViewModel(
-    private val favoritesUseCase: FavoritesUseCase
+    private val repository: CentralRepositoryImpl
 ) : ViewModel() {
 
     private val _uiState = MutableLiveData<FavoriteMoviesUiState>()
@@ -25,14 +25,14 @@ class FavoriteMoviesViewModel(
 
     init {
         viewModelScope.launch {
-            favoritesUseCase.loadFavoriteMovies().observeForever(observer)
+            repository.getFavorites().observeForever(observer)
         }
     }
 
     fun removeFromFavorites(details: FavoriteMovies) {
         viewModelScope.launch {
             try {
-                favoritesUseCase.removeFromFavorites(details)
+                repository.removeFromFavorites(details)
             } catch (e: Exception) {
                 _uiState.value = FavoriteMoviesUiState.Error(e.message)
             }
@@ -41,13 +41,6 @@ class FavoriteMoviesViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        favoritesUseCase.loadFavoriteMovies().removeObserver(observer)
-    }
-
-    sealed interface FavoriteMoviesUiState {
-        data class Success(
-            val favoriteMoviesList: List<FavoriteMovies>
-        ) : FavoriteMoviesUiState
-        data class Error(val message: String? = null) : FavoriteMoviesUiState
+        repository.getFavorites().removeObserver(observer)
     }
 }

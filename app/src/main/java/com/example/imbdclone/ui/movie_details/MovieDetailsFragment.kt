@@ -26,7 +26,7 @@ class MovieDetailsFragment : Fragment() {
 
     private val viewModel: MovieDetailsViewModel by viewModels {
         val app = requireActivity().application as MyApp
-        MovieViewModelFactory(app.repository, app.favoritesUseCase)
+        MovieViewModelFactory(app.repository)
     }
 
     private lateinit var binding: MovieDetailsFragmentBinding

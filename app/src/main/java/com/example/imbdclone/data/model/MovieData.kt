@@ -11,6 +11,7 @@ data class MovieData(
     @Json(name = "id") val id: Int,
     @Json(name = "title") val title: String,
     @Json(name = "is_favorite") val isFavorite: Boolean = false,
+    @Json(name = "original_title") val originalTitle: String,
     @Json(name = "overview") val overview: String,
     @Json(name = "poster_path") val posterPath: String?,
     @Json(name = "backdrop_path") val backdropPath: String?,

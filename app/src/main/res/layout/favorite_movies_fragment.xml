@@ -28,7 +28,7 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
             android:gravity="center"
-            android:text="Favorite Movies"
+            android:text="@string/favorite_movies"
             android:textSize="30sp"
             app:layout_constraintBottom_toTopOf="@+id/favorites"
             app:layout_constraintEnd_toEndOf="parent"
@@ -53,4 +53,27 @@
             tools:listitem="@layout/grid_item" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/fallback_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="@string/no_internet_connection"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/retry_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/retry"
+            android:textSize="15sp" />
+    </LinearLayout>
 </FrameLayout>

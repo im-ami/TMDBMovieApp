@@ -16,7 +16,7 @@ class FavoriteMoviesFragment: Fragment() {
 
     private val viewModel: FavoriteMoviesViewModel by viewModels {
         val app = requireActivity().application as MyApp
-        MovieViewModelFactory(app.repository, app.favoritesUseCase)
+        MovieViewModelFactory(app.repository)
     }
 
     private lateinit var binding: FavoriteMoviesFragmentBinding
@@ -47,12 +47,14 @@ class FavoriteMoviesFragment: Fragment() {
 
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             when(state) {
-                is FavoriteMoviesViewModel.FavoriteMoviesUiState.Success -> {
+                is FavoriteMoviesUiState.Loading -> binding.progressBar2.visibility = View.VISIBLE
+
+                is FavoriteMoviesUiState.Success -> {
                     favoriteMoviesAdapter.submitList(state.favoriteMoviesList.toList())
                     showContent()
                 }
 
-                is FavoriteMoviesViewModel.FavoriteMoviesUiState.Error -> {
+                is FavoriteMoviesUiState.Error -> {
                     hideContent()
                 }
             }
@@ -62,10 +64,12 @@ class FavoriteMoviesFragment: Fragment() {
     private fun showContent() {
         binding.progressBar2.visibility = View.GONE
         binding.mainFavoritesView.visibility = View.VISIBLE
+        binding.fallbackContainer.visibility = View.GONE
     }
 
     private fun hideContent() {
         binding.mainFavoritesView.visibility = View.GONE
         binding.progressBar2.visibility = View.GONE
+        binding.fallbackContainer.visibility = View.VISIBLE
     }
 }

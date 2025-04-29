@@ -8,14 +8,11 @@ import com.example.imbdclone.data.model.Cast
 import com.example.imbdclone.data.model.FavoriteMovies
 import com.example.imbdclone.data.model.MovieDetails
 import com.example.imbdclone.data.model.MoviePosters
-import com.example.imbdclone.data.repository.CentralRepository
-import com.example.imbdclone.usecase.FavoritesUseCase
+import com.example.imbdclone.data.repository.CentralRepositoryImpl
 import kotlinx.coroutines.launch
 
 class MovieDetailsViewModel(
-    private val centralRepository: CentralRepository,
-    private val favoritesUseCase: FavoritesUseCase
-) : ViewModel() {
+    private val repository: CentralRepositoryImpl) : ViewModel() {
 
     private val _uiState = MutableLiveData<MovieDetailsUiState>()
     val uiState: LiveData<MovieDetailsUiState> = _uiState
@@ -28,9 +25,9 @@ class MovieDetailsViewModel(
 
         viewModelScope.launch {
             try {
-                val movie = centralRepository.fetchMovieDetails(movieId)
-                val credits = centralRepository.getMovieCredits(movieId)
-                val images = centralRepository.getMovieImages(movieId)
+                val movie = repository.fetchMovieDetails(movieId)
+                val credits = repository.getMovieCredits(movieId)
+                val images = repository.getMovieImages(movieId)
 
                 _uiState.value = MovieDetailsUiState.Success(
                     movie = movie,
@@ -45,7 +42,7 @@ class MovieDetailsViewModel(
 
     fun checkIfFavorites(movieId: Int) {
         viewModelScope.launch {
-            _favoriteState.value = favoritesUseCase.isMovieFavorite(movieId = movieId)
+            _favoriteState.value = repository.isMovieFavorite(movieId = movieId)
         }
     }
 
@@ -53,7 +50,7 @@ class MovieDetailsViewModel(
     fun addToFavorites(details: FavoriteMovies) {
         viewModelScope.launch {
             try {
-                favoritesUseCase.addToFavorites(details)
+                repository.addToFavorites(details)
             } catch (e: Exception) {
                 _uiState.value = MovieDetailsUiState.Error(e.message)
             }
@@ -63,7 +60,7 @@ class MovieDetailsViewModel(
     fun removeFromFavorites(details: FavoriteMovies) {
         viewModelScope.launch {
             try {
-                favoritesUseCase.removeFromFavorites(details)
+                repository.removeFromFavorites(details)
             } catch (e: Exception) {
                 _uiState.value = MovieDetailsUiState.Error(e.message)
             }
