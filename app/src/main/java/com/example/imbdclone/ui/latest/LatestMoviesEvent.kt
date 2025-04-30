@@ -5,5 +5,5 @@ import com.example.imbdclone.data.model.MovieData
 sealed interface LatestMoviesEvent {
     data class LaunchDetailsPage(val movie: MovieData): LatestMoviesEvent
     data class ToggleFavoriteButton(val movie: MovieData): LatestMoviesEvent
-    object LoadNextResultSet: LatestMoviesEvent
+    data object LoadNextResultSet: LatestMoviesEvent
 }

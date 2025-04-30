@@ -20,7 +20,6 @@ class FavoriteMoviesFragment: Fragment() {
     }
 
     private lateinit var binding: FavoriteMoviesFragmentBinding
-
     private lateinit var favoriteMoviesAdapter: FavoriteMoviesAdapter
 
     override fun onCreateView(
@@ -41,16 +40,16 @@ class FavoriteMoviesFragment: Fragment() {
         binding.favorites.layoutManager = layoutManager
 
         favoriteMoviesAdapter = FavoriteMoviesAdapter { movie ->
-            viewModel.removeFromFavorites(movie)
+            viewModel.handleEvents(FavoriteMoviesEvent.RemoveFromFavorites(movie))
         }
         binding.favorites.adapter = favoriteMoviesAdapter
 
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             when(state) {
-                is FavoriteMoviesUiState.Loading -> binding.progressBar2.visibility = View.VISIBLE
+                is FavoriteMoviesUiState.Loading -> binding.progressBar2.toggleVisibility(true)
 
                 is FavoriteMoviesUiState.Success -> {
-                    favoriteMoviesAdapter.submitList(state.favoriteMoviesList.toList())
+                    favoriteMoviesAdapter.submitList(state.favoriteMoviesList)
                     showContent()
                 }
 
@@ -61,15 +60,19 @@ class FavoriteMoviesFragment: Fragment() {
         }
     }
 
+    private fun View.toggleVisibility(isVisible: Boolean) {
+        visibility = if (isVisible) View.VISIBLE else View.GONE
+    }
+
     private fun showContent() {
-        binding.progressBar2.visibility = View.GONE
-        binding.mainFavoritesView.visibility = View.VISIBLE
-        binding.fallbackContainer.visibility = View.GONE
+        binding.progressBar2.toggleVisibility(false)
+        binding.mainFavoritesView.toggleVisibility(true)
+        binding.fallbackContainer.toggleVisibility(false)
     }
 
     private fun hideContent() {
-        binding.mainFavoritesView.visibility = View.GONE
-        binding.progressBar2.visibility = View.GONE
-        binding.fallbackContainer.visibility = View.VISIBLE
+        binding.progressBar2.toggleVisibility(false)
+        binding.mainFavoritesView.toggleVisibility(false)
+        binding.fallbackContainer.toggleVisibility(true)
     }
 }

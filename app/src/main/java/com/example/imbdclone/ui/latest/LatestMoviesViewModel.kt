@@ -16,10 +16,13 @@ class LatestMoviesViewModel(
     private val _uiState = MutableLiveData<LatestMoviesUiState>()
     val uiState: LiveData<LatestMoviesUiState> = _uiState
 
+    private val _navigateToDetails = MutableLiveData<MovieData?>()
+    val navigateToDetails: LiveData<MovieData?> = _navigateToDetails
+
     private var currentPage = 1
     private var isLoading = false
-    private val favoriteMovieIds = mutableListOf<Int>()
-    private val moviesList = mutableListOf<MovieData>()
+    private val favoriteMovieIds = mutableSetOf<Int>()
+    private val moviesList = mutableSetOf<MovieData>()
 
     private val favoritesObserver = Observer<List<FavoriteMovies>> { favorites ->
         favoriteMovieIds.clear()
@@ -36,6 +39,33 @@ class LatestMoviesViewModel(
         loadNextPage()
     }
 
+    fun handleEvent(event: LatestMoviesEvent) {
+        when (event) {
+            is LatestMoviesEvent.ToggleFavoriteButton -> {
+                val favoriteMovie = FavoriteMovies(
+                    event.movie.id, event.movie.isFavorite,
+                    event.movie.title, event.movie.posterPath, event.movie.voteAverage
+                )
+                if (event.movie.isFavorite) {
+                    removeFromFavorites(favoriteMovie)
+                } else {
+                    addToFavorites(favoriteMovie)
+                }
+            }
+            is LatestMoviesEvent.LoadNextResultSet -> {
+                loadNextPage()
+            }
+
+            is LatestMoviesEvent.LaunchDetailsPage -> {
+                _navigateToDetails.value = event.movie
+            }
+        }
+    }
+
+    fun clearNavigationEvent() {
+        _navigateToDetails.value = null
+    }
+
     private fun updateMovieFavorites() {
         val updatedMovies = moviesList.map { movie ->
             if (favoriteMovieIds.contains(movie.id)) {
@@ -44,10 +74,10 @@ class LatestMoviesViewModel(
                 movie.copy(isFavorite = false)
             }
         }
-        _uiState.value = LatestMoviesUiState.Success(updatedMovies)
+        _uiState.value = LatestMoviesUiState.Success(updatedMovies.toList())
     }
 
-    fun loadNextPage() {
+    private fun loadNextPage() {
         if (isLoading) return
         isLoading = true
 
@@ -66,7 +96,7 @@ class LatestMoviesViewModel(
         }
     }
 
-    fun addToFavorites(details: FavoriteMovies) {
+    private fun addToFavorites(details: FavoriteMovies) {
         viewModelScope.launch {
             try {
                 repository.addToFavorites(details)
@@ -76,7 +106,7 @@ class LatestMoviesViewModel(
         }
     }
 
-    fun removeFromFavorites(details: FavoriteMovies) {
+    private fun removeFromFavorites(details: FavoriteMovies) {
         viewModelScope.launch {
             try {
                 repository.removeFromFavorites(details)
@@ -89,13 +119,5 @@ class LatestMoviesViewModel(
     override fun onCleared() {
         super.onCleared()
         repository.getFavorites().removeObserver(favoritesObserver)
-    }
-
-    sealed interface LatestMoviesUiState {
-        data object Loading : LatestMoviesUiState
-        data class Success(
-            val result: List<MovieData>
-        ) : LatestMoviesUiState
-        data class Error(val message: String? = null) : LatestMoviesUiState
     }
 }

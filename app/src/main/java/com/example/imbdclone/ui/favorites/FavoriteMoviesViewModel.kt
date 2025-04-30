@@ -20,7 +20,7 @@ class FavoriteMoviesViewModel(
     private val observer = Observer<List<FavoriteMovies>> { favorites ->
         favoritesList.clear()
         favoritesList.addAll(favorites)
-        _uiState.value = FavoriteMoviesUiState.Success(favoriteMoviesList = favoritesList)
+        _uiState.value = FavoriteMoviesUiState.Success(favoritesList.toList())
     }
 
     init {
@@ -29,7 +29,15 @@ class FavoriteMoviesViewModel(
         }
     }
 
-    fun removeFromFavorites(details: FavoriteMovies) {
+    fun handleEvents(event: FavoriteMoviesEvent) {
+        when(event) {
+            is FavoriteMoviesEvent.RemoveFromFavorites -> {
+                removeFromFavorites(event.movie)
+            }
+        }
+    }
+
+    private fun removeFromFavorites(details: FavoriteMovies) {
         viewModelScope.launch {
             try {
                 repository.removeFromFavorites(details)

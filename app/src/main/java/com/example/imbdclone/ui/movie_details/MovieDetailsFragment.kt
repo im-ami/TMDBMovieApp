@@ -80,11 +80,11 @@ class MovieDetailsFragment : Fragment() {
         viewModel.loadMovieDetails(movieID)
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             when(state) {
-                is MovieDetailsViewModel.MovieDetailsUiState.Loading -> {
+                is MovieDetailsUiState.Loading -> {
                     binding.progressBar3.visibility = View.VISIBLE
                 }
 
-                is MovieDetailsViewModel.MovieDetailsUiState.Success -> {
+                is MovieDetailsUiState.Success -> {
                     showContent()
 
                     val details = state.movie
@@ -96,7 +96,7 @@ class MovieDetailsFragment : Fragment() {
                     setMovieImages(images)
                 }
 
-                is MovieDetailsViewModel.MovieDetailsUiState.Error -> {
+                is MovieDetailsUiState.Error -> {
                     hideContent()
                 }
             }

@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.imbdclone.MyApp
 import com.example.imbdclone.R
-import com.example.imbdclone.data.model.FavoriteMovies
 import com.example.imbdclone.databinding.LatestMoviesFragmentBinding
 import com.example.imbdclone.di.MovieViewModelFactory
 import com.example.imbdclone.ui.adapters.MoviesAdapter
@@ -24,7 +23,6 @@ class LatestMoviesFragment : Fragment() {
     }
 
     private lateinit var binding: LatestMoviesFragmentBinding
-
     private lateinit var latestMoviesAdapter: MoviesAdapter
 
     override fun onCreateView(
@@ -44,50 +42,42 @@ class LatestMoviesFragment : Fragment() {
         val layoutManager = GridLayoutManager(requireContext(), 2)
         binding.latest.layoutManager = layoutManager
 
-        latestMoviesAdapter = MoviesAdapter (
+        latestMoviesAdapter = MoviesAdapter(
             onItemClick = { movie ->
-                val movieID = movie.id
-                val isFavorite = movie.isFavorite
-                val posterPath = movie.posterPath
-                val movieTitle = movie.title
-                val voteAverage = movie.voteAverage
+                viewModel.handleEvent(LatestMoviesEvent.LaunchDetailsPage(movie))
+            },
+            onFavoriteClick = { movie ->
+                viewModel.handleEvent(LatestMoviesEvent.ToggleFavoriteButton(movie))
+            }
+        )
+        binding.latest.adapter = latestMoviesAdapter
 
+        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            when(state) {
+                is LatestMoviesUiState.Loading -> binding.progressBar.toggleVisibility(true)
+
+                is LatestMoviesUiState.Success -> {
+                    latestMoviesAdapter.submitList(state.result)
+                    showContent()
+                }
+                is LatestMoviesUiState.Error -> hideContent()
+            }
+        }
+
+        viewModel.navigateToDetails.observe(viewLifecycleOwner) { movie ->
+            movie?.let {
                 val fragment = MovieDetailsFragment.newInstance(
-                    movieID,
-                    isFavorite,
-                    posterPath,
-                    movieTitle,
-                    voteAverage
+                    it.id, it.isFavorite, it.posterPath, it.title, it.voteAverage
                 )
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.main_fragment, fragment)
                     .addToBackStack(null)
                     .commit()
-            },
-            onFavoriteClick = { movie ->
-                val favoriteMovie = FavoriteMovies(movie.id, movie.isFavorite, movie.title, movie.posterPath, movie.voteAverage)
-                if (movie.isFavorite) {
-                    viewModel.removeFromFavorites(favoriteMovie)
-                } else {
-                    viewModel.addToFavorites(favoriteMovie)
-                }
-        })
 
-        binding.latest.adapter = latestMoviesAdapter
-
-        viewModel.uiState.observe(viewLifecycleOwner) { state ->
-            when(state) {
-                is LatestMoviesViewModel.LatestMoviesUiState.Loading -> binding.progressBar.visibility = View.VISIBLE
-
-                is LatestMoviesViewModel.LatestMoviesUiState.Success -> {
-                    binding.progressBar.visibility = View.GONE
-
-                    latestMoviesAdapter.submitList(state.result.toList())
-                    showContent()
-                }
-                is LatestMoviesViewModel.LatestMoviesUiState.Error -> hideContent()
+                viewModel.clearNavigationEvent()
             }
         }
+
 
         binding.latest.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -98,21 +88,25 @@ class LatestMoviesFragment : Fragment() {
                 val visibleThreshold = 4
 
                 if (totalItemCount <= lastVisibleItem + visibleThreshold) {
-                    viewModel.loadNextPage()
+                    viewModel.handleEvent(LatestMoviesEvent.LoadNextResultSet)
                 }
             }
         })
     }
 
+    private fun View.toggleVisibility(isVisible: Boolean) {
+        visibility = if (isVisible) View.VISIBLE else View.GONE
+    }
+
     private fun showContent() {
-        binding.progressBar.visibility = View.GONE
-        binding.mainLatestView.visibility = View.VISIBLE
-        binding.fallbackContainer.visibility = View.GONE
+        binding.progressBar.toggleVisibility(false)
+        binding.mainLatestView.toggleVisibility(true)
+        binding.fallbackContainer.toggleVisibility(false)
     }
 
     private fun hideContent() {
-        binding.mainLatestView.visibility = View.GONE
-        binding.progressBar.visibility = View.GONE
-        binding.fallbackContainer.visibility = View.VISIBLE
+        binding.progressBar.toggleVisibility(false)
+        binding.mainLatestView.toggleVisibility(false)
+        binding.fallbackContainer.toggleVisibility(true)
     }
 }
