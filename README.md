@@ -1,0 +1,1 @@
+The TMDB Movie App is a Kotlin-based Android application that allows users to explore, view and save movies using data fetched from The Movie Database (TMDb) API. It follows modern Android development practices with clean architecture, responsive UI, and local data persistence.
